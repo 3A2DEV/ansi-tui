@@ -1,0 +1,381 @@
+![Static Badge](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
+![Static Badge](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js)
+![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript)
+![Static Badge](https://img.shields.io/badge/MIT-blue?logo=License&label=License)
+
+# ansi-tui 
+
+An Ansible workstation-style terminal UI.
+
+```
+╭───────────────────────────────────────────────────────╮
+│  █████╗ ███╗   ██╗███████╗██╗   ████████╗██╗   ██╗██╗ │
+│ ██╔══██╗████╗  ██║██╔════╝██║   ╚══██╔══╝██║   ██║██║ │
+│ ███████║██╔██╗ ██║███████╗██║█████╗██║   ██║   ██║██║ │
+│ ██╔══██║██║╚██╗██║╚════██║██║╚════╝██║   ██║   ██║██║ │
+│ ██║  ██║██║ ╚████║███████║██║      ██║   ╚██████╔╝██║ │
+│ ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝      ╚═╝    ╚═════╝ ╚═╝ │
+│                                                       │
+│           ◈ Ansible Terminal User Interface           │
+╰───────────────────────────────────────────────────────╯
+```
+
+`ansi-tui` wraps day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
+
+## Highlights
+
+- Full-terminal shell with a static gradient banner, grouped sidebar, dashboard panels, and compact footer command strip
+- Sidebar accordion sub-navigation for tool actions, with direct jump into the form phase
+- Consistent 4-phase workflow for tool screens: action select -> parameter form -> command preview -> execute
+- Session-aware forms that pre-fill inventory, vault, environment, tags, working directory, and other context
+- Session management with create, select, edit, delete, and safe active-session cleanup
+- Jobs screen with recorded executions, exit status, duration, session name, target extraction, detail view, and deletion
+- Live output viewer with scroll, pause/resume, running spinner, elapsed time, and long-output clipping inside the frame
+- Runtime dashboard showing ansible-core, Python, Jinja, PyYAML, config file, collection path, and tool availability
+- Theme system with `Cyan`, `Blue`, `White`, `Gray`, `Yellow`, `Violet`, `Red`, and `Neon`
+- Proxy-aware execution for enterprise environments
+- Color-friendly execution defaults plus OSC 8 hyperlink stripping for cleaner terminal rendering
+- Offline-friendly install flow via `npm pack` and `install.sh --local`
+
+## Full Functionality
+
+### Shell And Navigation
+
+- Full-screen workstation shell anchored to the top of the terminal
+- Grouped sidebar with `WORKSPACE` and `MANAGE` sections
+- Accordion sub-navigation for tool actions
+- Compact footer with active screen context
+- Theme cycling from the keyboard
+
+### Dashboard
+
+- `Session` panel with icon-led rows for name, path, inventory, vault, tags, and notes
+- `Runtime` panel with version chips and config/collections paths
+- `Health & Tool Matrix` panel with a static gradient coverage bar and availability matrix
+- `Workspace Notes` panel with quick operator guidance
+
+### Session Management
+
+- Create sessions with a 2-step flow: name, directory
+- Edit sessions with a 2-step flow: name, directory
+- Delete sessions with explicit confirmation
+- Activate a saved session from the session list
+- Keyboard-driven saved-session list with `Enter`, `n`, `e`, `d`, and `Esc`
+- Safe clearing of the active-session pointer when the active session is deleted
+
+### Tool Workflow Engine
+
+- Shared 4-phase flow across tool screens
+- Direct tool launch from sidebar sub-actions into the form phase
+- Command preview before execution
+- Live command execution with streaming output
+
+### Live Output And Jobs
+
+- Scrollable output panel
+- Pause/resume auto-scroll
+- Wrapped or plain-text output modes depending on tool needs
+- Automatic job recording for active-session runs
+- Automatic per-run log file creation
+- Jobs list with status badges, timestamps, duration, session names, and derived targets
+- Job detail view with metadata and output log
+- Job deletion that also removes the associated log file when present
+- Automatic pruning of old log files on startup
+
+### Enterprise And Runtime Behavior
+
+- Proxy-aware environment merging
+- Forced color-friendly execution defaults for Ansible output
+- OSC 8 hyperlink stripping for safer terminal rendering
+- Blank-line preservation in streamed command output
+- Runtime/tool detection for ansible-core, Python, Jinja, PyYAML, config path, and broader Ansible tool availability
+
+### Supported Interactive Tool Screens
+
+- `ansible-playbook`
+  - actions: `run`, `check`, `diff`, `syntax-check`
+- `ansible-galaxy`
+  - actions: `role install`, `role list`, `role remove`, `role init`, `role search`, `collection install`, `collection list`, `collection remove`, `collection init`, `collection search`
+- `ansible-vault`
+  - actions: `encrypt`, `decrypt`, `view`, `edit`, `rekey`, `encrypt_string`
+- `ansible-inventory`
+  - actions: `list`, `host`, `graph`
+- `ansible-doc`
+  - actions: `lookup`, `list`
+- `ansible-config`
+  - actions: `list`, `dump`, `view`, `init`
+- `ansible-lint`
+  - actions: `run`, `list-rules`, `list-tags`
+- `ansible-builder`
+  - actions: `build`, `create`, `introspect`
+- `ansible-creator`
+  - actions: `init collection`, `init role`, `init playbook`
+- `ansible-test`
+  - actions: `units`, `integration`, `sanity`
+
+### Management Views
+
+- `Jobs`
+- `Sessions`
+
+The runtime/tool matrix also detects broader tooling availability including `ansible`, `ansible-pull`, and `ansible-community`.
+
+## Requirements
+
+- Node.js `18+`
+- A modern terminal with color support
+- Ansible tooling is optional, but the app is most useful when `ansible-core` and related binaries are installed
+
+## Install
+
+### From npm
+
+```bash
+npm install -g ansi-tui
+ansi-tui
+```
+
+### Run without installing
+
+```bash
+npx ansi-tui
+```
+
+### Via the install script
+
+```bash
+./install.sh
+```
+
+This installs to `~/.local/bin/ansi-tui` by default.
+
+### Offline or air-gapped install
+
+Build a tarball on a connected machine:
+
+```bash
+npm pack
+```
+
+Install it on the target machine:
+
+```bash
+./install.sh --local ./ansi-tui-0.1.0.tgz
+```
+
+## Usage
+
+```bash
+ansi-tui
+```
+
+On launch you get:
+
+- a top shell with session and runtime metadata
+- a left navigation rail grouped into `WORKSPACE` and `MANAGE`
+- a dashboard with session, runtime, health/tool matrix, and workspace notes panels
+- a footer with the active screen context and global shortcuts
+
+
+## How Tool Screens Work
+
+Every workflow screen follows the same pattern:
+
+1. Select an action.
+2. Fill in parameters from the generated schema.
+3. Review the exact command before execution.
+4. Run it and inspect the live output inside the app.
+
+Execution behavior:
+
+- forms pre-fill from the active session where possible
+- validation failures stay in the UI instead of throwing
+- non-zero exit codes are treated as normal command results
+- runs executed with an active session are written to the jobs history and their output logs are saved automatically
+
+## Keyboard Shortcuts
+
+### Global
+
+| Key | Action |
+| --- | --- |
+| `q` | Quit |
+| `s` | Open sessions |
+| `t` | Cycle theme |
+
+### Sidebar / Navigation
+
+| Key | Action |
+| --- | --- |
+| `↑` / `↓` | Move through sidebar entries or sub-actions |
+| `→` / `Enter` | Expand a tool or launch the selected action |
+| `Esc` | Collapse an open sidebar accordion |
+
+### Forms
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move between fields |
+| `↑` / `↓` | Move between fields |
+| `PageUp` / `PageDown` | Jump through larger forms |
+| `Enter` | Continue to the next step |
+| `Esc` | Go back |
+
+### Live Output
+
+| Key | Action |
+| --- | --- |
+| `Space` | Pause or resume auto-scroll |
+| `↑` / `↓` | Scroll output |
+| `Enter` | Jump to the bottom |
+| `Esc` | Return to the previous step or home flow, depending on launch path |
+
+### Jobs Screen
+
+| Key | Action |
+| --- | --- |
+| `↑` / `↓` | Move through recorded jobs |
+| `PageUp` / `PageDown` | Jump faster through the list or log output |
+| `Enter` | Open job detail |
+| `d` | Delete the selected job |
+| `Esc` | Back |
+
+### Sessions Screen
+
+| Key | Action |
+| --- | --- |
+| `↑` / `↓` | Move through saved sessions |
+| `Enter` | Activate selected session |
+| `n` | Create a new session |
+| `e` | Edit selected session |
+| `d` | Delete selected session |
+| `Esc` | Return to main navigation |
+
+## Sessions
+
+Sessions are the app's working-context model. They let you switch cleanly between projects, inventories, and environments without retyping the same flags every time.
+
+Current session screen capabilities:
+
+- stacked panels in this order: `Active Workspace`, `Saved Sessions`, `Workspace Notes`
+- activate a session with `Enter`
+- create a session with `n`
+- edit the selected session with `e`
+- delete the selected session with `d`
+- return to the main navigation flow with `Esc`
+
+Session data can include:
+
+- working directory
+- inventory
+- vault password file
+- vault ID
+- extra vars
+- environment variables
+- `ansible.cfg`
+- tags
+- notes
+
+## Jobs And Logs
+
+Executions run with an active session are recorded as jobs with:
+
+- tool name
+- selected action
+- full command argv
+- session id and session name
+- timestamp
+- exit code
+- duration
+- output log file path
+
+The Jobs screen provides:
+
+- newest-first job list
+- status badges for success and failure
+- derived target/file column where possible
+- full detail view with command, metadata, and scrollable output
+- deletion of the job entry and its associated log file
+
+Old logs are pruned automatically on startup to keep disk growth bounded.
+
+## Data Storage
+
+Persistent data uses `env-paths('ansi-tui')`, so the base directory varies by OS.
+
+Typical examples:
+
+- macOS: `~/Library/Application Support/ansi-tui`
+- Linux: `~/.local/share/ansi-tui`
+
+Layout:
+
+```text
+<env-paths data dir>/
+├── sessions/       # {uuid}.json per session
+├── active_session  # active session id
+├── history/        # {sessionId}.jsonl job history per session
+└── logs/           # {timestamp}-{tool}.log execution output
+```
+
+## Development
+
+```bash
+npm install
+npm run dev
+npm run build          # Bundle src/ to dist/
+npm start              # Run built app
+```
+
+Useful commands:
+
+```bash
+npm run lint           # ESLint on src/
+npx tsc --noEmit       # Type-check only
+npm test               # Full vitest suite
+npm run test:core      # Core module tests
+npm run test:tools     # Tool tests
+npm run test:components # Shared component tests
+npm run test:screens   # Screen tests
+npm run test:hooks     # Hook tests
+npm run test:watch     # Vitest watch mode
+```
+
+Run a single test file:
+
+```bash
+npx vitest run tests/core/jobs.test.ts
+npx vitest run tests/tools/playbook.test.ts
+npx vitest run tests/components/Sidebar.test.tsx
+npx vitest run tests/screens/JobsScreen.test.tsx
+npx vitest run tests/screens/SessionsScreen.test.tsx
+```
+
+Current suite expectation:
+
+- `230/230` tests passing
+
+## CI
+
+Pull requests run the npm test workflow defined in `.github/workflows/npm-tests.yml`.
+
+- suite-specific test runs for `core`, `tools`, `components`, `screens`, and `hooks`
+- Node.js matrix coverage for `20`, `22`, and `24`
+
+## Architecture Snapshot
+
+```text
+src/
+├── models/       # shared types only
+├── core/         # pure logic: detector, executor, jobs, proxy, session
+├── tools/        # BaseTool subclasses, zero UI imports
+├── hooks/        # React hooks wrapping core modules
+├── components/   # reusable Ink UI building blocks
+├── screens/      # workflow screens and management views
+├── App.tsx       # shell layout, routing, global hotkeys
+└── index.tsx     # entry point
+```
+
+## License
+
+MIT

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "nodejs-best-practices": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "computedHash": "64f10ff6795265dc4a97a72af86ee309fe57e6c35507775a4da893985984956b"
+    },
+    "terminal-ui-design": {
+      "source": "ratacat/claude-skills",
+      "sourceType": "github",
+      "computedHash": "d6f6411d1aef13cda0af64ff1d7097998de783e92077123f1851d7aac22aa332"
+    }
+  }
+}

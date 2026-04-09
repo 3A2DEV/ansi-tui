@@ -1,0 +1,39 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.map
+.ansible/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Agents
+.agents/
+.claude/
+.qwen/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+
+# Environment
+.env
+.env.*
+
+# ansi-tui data
+~/.local/share/ansi-tui/
+
+# md
+*.md
+!README.md
+!CHANGELOG.md
+!CONTRIBUTING.md
+!pull_request_template.md

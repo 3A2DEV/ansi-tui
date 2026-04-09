@@ -1,0 +1,68 @@
+# .github/labeler.yml — PR auto-labelling via actions/labeler@v6
+# Matching logic: any-glob-to-any-file = label is applied if ANY pattern matches ANY changed file.
+
+components:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/components/**
+
+core:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/core/**
+
+hooks:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/hooks/**
+
+models:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/models/**
+
+screens:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/screens/**
+
+tools:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/tools/**
+
+utils:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/utils/**
+
+main:
+- changed-files:
+  - any-glob-to-any-file:
+    - src/App.tsx
+    - src/index.tsx
+
+tests:
+- changed-files:
+  - any-glob-to-any-file:
+    - tests/**
+
+ci:
+- changed-files:
+  - any-glob-to-any-file:
+    - .github/workflows/**
+    - .github/labeler.yml
+    - .github/patchback.yml
+    - .github/dependabot.yml
+
+template:
+- changed-files:
+  - any-glob-to-any-file:
+    - .github/ISSUE_TEMPLATE/**
+
+docs:
+- changed-files:
+  - any-glob-to-any-file:
+    - README.md
+    - CONTRIBUTING.md
+    - CHANGELOG.md

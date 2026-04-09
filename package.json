@@ -1,0 +1,60 @@
+{
+  "name": "ansi-tui",
+  "version": "0.1.0",
+  "description": "Ansible Terminal User Interface",
+  "type": "module",
+  "bin": {
+    "ansi-tui": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:core": "vitest run tests/core",
+    "test:tools": "vitest run tests/tools",
+    "test:components": "vitest run tests/components",
+    "test:screens": "vitest run tests/screens",
+    "test:hooks": "vitest run tests/hooks",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "env-paths": "^3.0.0",
+    "execa": "^8.0.0",
+    "ink": "^5.0.0",
+    "ink-select-input": "^6.0.0",
+    "ink-spinner": "^5.0.0",
+    "ink-table": "^3.0.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^18.0.0",
+    "strip-ansi": "^7.0.0",
+    "uuid": "^10.0.0",
+    "which": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "@types/react": "^18.0.0",
+    "@types/uuid": "^10.0.0",
+    "@types/which": "^3.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.0.0",
+    "ink-testing-library": "^3.0.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "ansible",
+    "tui",
+    "cli",
+    "devops",
+    "automation"
+  ],
+  "license": "MIT"
+}
