@@ -22,7 +22,7 @@ An Ansible workstation-style terminal UI.
 
 `ansi-tui` wraps day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
 
-<a href="url"><img src="rec.gif" style="border-radius:2%"></a>
+![terminal-rec](rec.gif)
 
 
 ## Highlights
