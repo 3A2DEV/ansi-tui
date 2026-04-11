@@ -1,7 +1,9 @@
 import { BaseTool } from './base.js';
 import type { ToolParams, ValidationError, ParamSchema } from './base.js';
+import { VAULT_ASK_PARAMS } from './params.js';
 
 const VAULT_ACTIONS = [
+  'create',
   'encrypt',
   'decrypt',
   'view',
@@ -32,6 +34,14 @@ export class VaultTool extends BaseTool {
         type: 'text',
         placeholder: 'dev@prompt',
         description: 'Vault identity label',
+      },
+      ...VAULT_ASK_PARAMS,
+      {
+        key: 'encryptVaultId',
+        label: 'Encrypt vault ID',
+        type: 'text',
+        placeholder: 'dev',
+        description: 'Vault ID to use when encrypting',
       },
     ];
 
@@ -66,6 +76,27 @@ export class VaultTool extends BaseTool {
           placeholder: 'encrypted_vars.yml',
           description: 'Write output to file instead of stdout',
         },
+        {
+          key: 'prompt',
+          label: 'Prompt',
+          type: 'checkbox',
+          defaultValue: false,
+          description: 'Prompt for the string to encrypt',
+        },
+        {
+          key: 'showInput',
+          label: 'Show input',
+          type: 'checkbox',
+          defaultValue: false,
+          description: 'Show plaintext input while typing',
+        },
+        {
+          key: 'stdinName',
+          label: 'Stdin name',
+          type: 'text',
+          placeholder: 'my_secret',
+          description: 'Variable name when reading plaintext from stdin',
+        },
         ...common,
       ];
     }
@@ -87,6 +118,27 @@ export class VaultTool extends BaseTool {
           required: true,
           placeholder: '.new-vault-pass',
           description: 'Path to the new vault password file',
+        },
+        ...common,
+      ];
+    }
+
+    if (action === 'create') {
+      return [
+        {
+          key: 'file',
+          label: 'Vault file',
+          type: 'file',
+          required: true,
+          placeholder: 'group_vars/all/vault.yml',
+          description: 'Path to the new vault file to create',
+        },
+        {
+          key: 'skipTtyCheck',
+          label: 'Skip TTY check',
+          type: 'checkbox',
+          defaultValue: false,
+          description: 'Allow creation when no interactive TTY is attached',
         },
         ...common,
       ];
@@ -159,8 +211,21 @@ export class VaultTool extends BaseTool {
     if (params['vaultId']) {
       cmd.push('--vault-id', params['vaultId'] as string);
     }
+    if (params['askVaultPass']) {
+      cmd.push('-J');
+    }
+    if (params['encryptVaultId']) {
+      cmd.push('--encrypt-vault-id', params['encryptVaultId'] as string);
+    }
 
-    if (params.action === 'encrypt_string') {
+    if (params.action === 'create') {
+      if (params['skipTtyCheck']) {
+        cmd.push('--skip-tty-check');
+      }
+      if (params['file']) {
+        cmd.push(params['file'] as string);
+      }
+    } else if (params.action === 'encrypt_string') {
       if (params['plaintext']) {
         cmd.push(params['plaintext'] as string);
       }
@@ -171,6 +236,15 @@ export class VaultTool extends BaseTool {
       }
       if (params['outputFile']) {
         cmd.push('--output', params['outputFile'] as string);
+      }
+      if (params['prompt']) {
+        cmd.push('--prompt');
+      }
+      if (params['showInput']) {
+        cmd.push('--show-input');
+      }
+      if (params['stdinName']) {
+        cmd.push('--stdin-name', params['stdinName'] as string);
       }
     } else if (params.action === 'rekey') {
       if (params['file']) {

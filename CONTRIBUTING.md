@@ -32,6 +32,7 @@ npm run build          # Bundle src/ to dist/ via tsup
 npm run dev            # Watch mode
 npm start              # Run built app
 npm run lint           # ESLint on src/
+npm run typecheck      # Type-check only
 npx tsc --noEmit       # Type-check only
 npm test               # Full vitest suite
 npm run test:core      # Core module tests
@@ -40,6 +41,8 @@ npm run test:components # Shared component tests
 npm run test:screens   # Screen tests
 npm run test:hooks     # Hook tests
 npm run test:watch     # Watch mode
+npm run pack:check     # Inspect publish tarball contents
+npm run verify         # Typecheck + lint + tests + build
 ```
 
 Run a single test file:
@@ -69,7 +72,27 @@ npm run build
 
 Current suite expectation:
 
-- `230/230` tests passing
+- `297/297` tests passing
+
+Package verification before release:
+
+```bash
+npm run verify
+npm run pack:check
+```
+
+## Release Notes
+
+Current release path is manual.
+
+Before publishing:
+
+```bash
+npm run verify
+npm run pack:check
+```
+
+Then publish with npm using the package metadata in `package.json`.
 
 ## Project Structure
 

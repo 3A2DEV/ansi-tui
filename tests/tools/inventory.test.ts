@@ -35,6 +35,18 @@ describe('InventoryTool', () => {
       expect(cmd).toContain('--graph');
     });
 
+    it('adds graph group and output file flags', () => {
+      const cmd = tool.buildCommand({
+        action: 'graph',
+        inventory: 'hosts',
+        graphGroup: 'webservers',
+        outputFile: 'inventory.txt',
+      });
+      expect(cmd).toContain('--output');
+      expect(cmd).toContain('inventory.txt');
+      expect(cmd.slice(-1)[0]).toBe('webservers');
+    });
+
     it('adds --export flag', () => {
       const cmd = tool.buildCommand({ action: 'list', inventory: 'hosts', export: true });
       expect(cmd).toContain('--export');
@@ -63,6 +75,27 @@ describe('InventoryTool', () => {
       });
       expect(cmd).not.toContain('----become');
       expect(cmd).not.toContain('--become');
+    });
+
+    it('adds limit, extra-vars, and vault flags', () => {
+      const cmd = tool.buildCommand({
+        action: 'list',
+        inventory: 'hosts',
+        limit: 'web',
+        extraVars: 'env=dev',
+        vaultId: 'dev@prompt',
+        vaultPasswordFile: '.vault-pass',
+        askVaultPass: true,
+        flushCache: true,
+        playbookDir: '.',
+      });
+      expect(cmd).toContain('-l');
+      expect(cmd).toContain('-e');
+      expect(cmd).toContain('--vault-id');
+      expect(cmd).toContain('--vault-password-file');
+      expect(cmd).toContain('-J');
+      expect(cmd).toContain('--flush-cache');
+      expect(cmd).toContain('--playbook-dir');
     });
   });
 
@@ -106,6 +139,11 @@ describe('InventoryTool', () => {
       const schema = tool.getParamSchema('graph');
       const varsField = schema.find((f) => f.key === 'vars');
       expect(varsField).toBeTruthy();
+    });
+
+    it('returns schema with graphGroup for graph action', () => {
+      const schema = tool.getParamSchema('graph');
+      expect(schema.find((field) => field.key === 'graphGroup')).toBeTruthy();
     });
   });
 });

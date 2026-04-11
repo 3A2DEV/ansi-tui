@@ -20,7 +20,9 @@ An Ansible workstation-style terminal UI.
 ╰───────────────────────────────────────────────────────╯
 ```
 
-`ansi-tui` wraps day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
+`ansi-tui` wraps common day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
+
+Interactive screens currently exist for `ansible-playbook`, `ansible-galaxy`, `ansible-vault`, `ansible-inventory`, `ansible-doc`, `ansible-config`, `ansible-lint`, `ansible-builder`, `ansible-creator`, `ansible-test`, and `ansible-console`. Runtime detection also reports broader tool availability, including `ansible-pull` and `ansible-community`, but those tools are not yet first-class interactive screens.
 
 ![terminal-rec](rec.gif)
 
@@ -96,32 +98,34 @@ An Ansible workstation-style terminal UI.
 ### Supported Interactive Tool Screens
 
 - `ansible-playbook`
-  - actions: `run`, `check`, `diff`, `syntax-check`
+  - actions: `run`, `check`, `diff`, `syntax-check`, `list-hosts`, `list-tasks`, `list-tags`
 - `ansible-galaxy`
-  - actions: `role install`, `role list`, `role remove`, `role init`, `role search`, `collection install`, `collection list`, `collection remove`, `collection init`, `collection search`
+  - actions: `role install`, `role list`, `role remove`, `role init`, `role search`, `role info`, `role import`, `role delete`, `role setup`, `collection install`, `collection list`, `collection init`, `collection build`, `collection publish`, `collection download`, `collection verify`
 - `ansible-vault`
-  - actions: `encrypt`, `decrypt`, `view`, `edit`, `rekey`, `encrypt_string`
+  - actions: `create`, `encrypt`, `decrypt`, `view`, `edit`, `rekey`, `encrypt_string`
 - `ansible-inventory`
   - actions: `list`, `host`, `graph`
 - `ansible-doc`
-  - actions: `lookup`, `list`
+  - actions: `lookup`, `list`, `list_files`, `metadata-dump`
 - `ansible-config`
-  - actions: `list`, `dump`, `view`, `init`
+  - actions: `list`, `dump`, `view`, `init`, `validate`
 - `ansible-lint`
-  - actions: `run`, `list-rules`, `list-tags`
+  - actions: `run`, `list-rules`, `list-tags`, `list-profiles`
 - `ansible-builder`
   - actions: `build`, `create`, `introspect`
 - `ansible-creator`
-  - actions: `init collection`, `init role`, `init playbook`
+  - actions: `init collection`, `init playbook`, `init execution_env`, `add resource`, `add plugin`
 - `ansible-test`
-  - actions: `units`, `integration`, `sanity`
+  - actions: `units`, `integration`, `sanity`, `coverage`, `env`, `shell`, `network-integration`, `windows-integration`
+- `ansible-console`
+  - actions: `start`
 
 ### Management Views
 
 - `Jobs`
 - `Sessions`
 
-The runtime/tool matrix also detects broader tooling availability including `ansible`, `ansible-pull`, and `ansible-community`.
+The runtime/tool matrix also detects broader tooling availability including `ansible`, `ansible-pull`, and `ansible-community`. Those tools are reported in the runtime view, but `ansible-pull` and `ansible-community` are not yet exposed as first-class interactive screens.
 
 ## Requirements
 
@@ -134,14 +138,14 @@ The runtime/tool matrix also detects broader tooling availability including `ans
 ### From npm
 
 ```bash
-npm install -g ansi-tui
+npm install -g @3a2dev/ansi-tui
 ansi-tui
 ```
 
 ### Run without installing
 
 ```bash
-npx ansi-tui
+npx @3a2dev/ansi-tui
 ```
 
 ### Via the install script
@@ -163,13 +167,28 @@ npm pack
 Install it on the target machine:
 
 ```bash
-./install.sh --local ./ansi-tui-0.1.0.tgz
+./install.sh --local ./3a2dev-ansi-tui-0.1.0.tgz
+```
+
+Quick local package smoke check:
+
+```bash
+npm pack
+./install.sh --local ./3a2dev-ansi-tui-0.1.0.tgz
+~/.local/bin/ansi-tui --help
 ```
 
 ## Usage
 
 ```bash
 ansi-tui
+```
+
+Package-level CLI helpers:
+
+```bash
+ansi-tui --help
+ansi-tui --version
 ```
 
 On launch you get:
@@ -195,6 +214,7 @@ Execution behavior:
 - validation failures stay in the UI instead of throwing
 - non-zero exit codes are treated as normal command results
 - runs executed with an active session are written to the jobs history and their output logs are saved automatically
+- launching without an interactive TTY prints a usage-oriented error instead of trying to render the TUI
 
 ## Keyboard Shortcuts
 

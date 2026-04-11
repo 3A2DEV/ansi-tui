@@ -1,7 +1,7 @@
 import { BaseTool } from './base.js';
 import type { ToolParams, ValidationError, ParamSchema } from './base.js';
 
-const LINT_ACTIONS = ['run', 'list-rules', 'list-tags'] as const;
+const LINT_ACTIONS = ['run', 'list-rules', 'list-tags', 'list-profiles'] as const;
 
 export class LintTool extends BaseTool {
   readonly name = 'ansible-lint';
@@ -17,17 +17,21 @@ export class LintTool extends BaseTool {
           key: 'profile',
           label: 'Profile',
           type: 'select',
-          options: ['basic', 'moderate', 'safety', 'shared', 'production'],
+          options: ['min', 'basic', 'moderate', 'safety', 'shared', 'production'],
           description: 'Lint profile to filter rules',
         },
         {
           key: 'outputFormat',
           label: 'Output format',
           type: 'select',
-          options: ['brief', 'full', 'json', 'codeclimate'],
+          options: ['brief', 'full', 'json', 'codeclimate', 'pep8', 'sarif'],
           defaultValue: 'brief',
         },
       ];
+    }
+
+    if (action === 'list-profiles') {
+      return [];
     }
 
     return [
@@ -41,13 +45,13 @@ export class LintTool extends BaseTool {
         placeholder: '.',
         description: 'Path to lint (file, directory, or playbook)',
       },
-      {
-        key: 'profile',
-        label: 'Profile',
-        type: 'select',
-        options: ['basic', 'moderate', 'safety', 'shared', 'production'],
-        description: 'Lint profile',
-      },
+        {
+          key: 'profile',
+          label: 'Profile',
+          type: 'select',
+          options: ['min', 'basic', 'moderate', 'safety', 'shared', 'production'],
+          description: 'Lint profile',
+        },
       {
         key: 'rules',
         label: 'Rules dir',
@@ -79,6 +83,13 @@ export class LintTool extends BaseTool {
         description: 'Attempt to auto-fix violations',
       },
       {
+        key: 'strict',
+        label: 'Strict',
+        type: 'checkbox',
+        defaultValue: false,
+        description: 'Return non-zero exit code on warnings',
+      },
+      {
         key: 'outputFormat',
         label: 'Output format',
         type: 'select',
@@ -107,6 +118,52 @@ export class LintTool extends BaseTool {
         placeholder: 'experimental',
         description: 'Rule IDs to treat as warnings',
       },
+      {
+        key: 'configFile',
+        label: 'Config file',
+        type: 'file',
+        placeholder: '.ansible-lint',
+        description: 'Path to ansible-lint configuration file',
+      },
+      {
+        key: 'ignoreFile',
+        label: 'Ignore file',
+        type: 'file',
+        placeholder: '.ansible-lint-ignore',
+        description: 'Path to ansible-lint ignore file',
+      },
+      {
+        key: 'projectDir',
+        label: 'Project directory',
+        type: 'text',
+        isPath: true,
+        pathType: 'directory',
+        placeholder: '.',
+        description: 'Project or repository root directory',
+      },
+      {
+        key: 'enableList',
+        label: 'Enable list',
+        type: 'text',
+        placeholder: 'opt-in',
+        description: 'Optional rules to enable',
+      },
+      {
+        key: 'sarifFile',
+        label: 'SARIF file',
+        type: 'text',
+        isPath: true,
+        pathType: 'file',
+        placeholder: 'ansible-lint.sarif',
+        description: 'Path to write SARIF output',
+      },
+      {
+        key: 'offline',
+        label: 'Offline',
+        type: 'checkbox',
+        defaultValue: false,
+        description: 'Disable requirement installs and schema refreshes',
+      },
     ];
   }
 
@@ -125,6 +182,8 @@ export class LintTool extends BaseTool {
       cmd.push('--list-rules');
     } else if (params.action === 'list-tags') {
       cmd.push('--list-tags');
+    } else if (params.action === 'list-profiles') {
+      cmd.push('--list-profiles');
     }
 
     if (params['profile']) {
@@ -134,13 +193,21 @@ export class LintTool extends BaseTool {
       cmd.push('-r', params['rules'] as string);
     }
     if (params['exclude']) {
-      cmd.push('-x', params['exclude'] as string);
+      for (const path of (params['exclude'] as string)
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean)) {
+        cmd.push('--exclude', path);
+      }
     }
     if (params['skipList']) {
       cmd.push('--skip-list', params['skipList'] as string);
     }
     if (params['fix']) {
       cmd.push('--fix');
+    }
+    if (params['strict']) {
+      cmd.push('-s');
     }
     if (params['outputFormat'] && params['outputFormat'] !== 'brief') {
       cmd.push('-f', params['outputFormat'] as string);
@@ -153,6 +220,24 @@ export class LintTool extends BaseTool {
     }
     if (params['warnList']) {
       cmd.push('-w', params['warnList'] as string);
+    }
+    if (params['configFile']) {
+      cmd.push('-c', params['configFile'] as string);
+    }
+    if (params['ignoreFile']) {
+      cmd.push('-i', params['ignoreFile'] as string);
+    }
+    if (params['projectDir']) {
+      cmd.push('--project-dir', params['projectDir'] as string);
+    }
+    if (params['enableList']) {
+      cmd.push('--enable-list', params['enableList'] as string);
+    }
+    if (params['sarifFile']) {
+      cmd.push('--sarif-file', params['sarifFile'] as string);
+    }
+    if (params['offline']) {
+      cmd.push('--offline');
     }
 
     if (params.action === 'run' && params['path']) {

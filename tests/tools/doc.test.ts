@@ -9,11 +9,11 @@ describe('DocTool', () => {
   });
 
   it('returns all actions', () => {
-    expect(tool.getActions()).toEqual(['lookup', 'list']);
+    expect(tool.getActions()).toEqual(['lookup', 'list', 'list_files', 'metadata-dump']);
   });
 
   describe('buildCommand', () => {
-    it('builds lookup command with snippet and json output', () => {
+    it('does not emit -t for outputFormat json', () => {
       const cmd = tool.buildCommand({
         action: 'lookup',
         module: 'copy',
@@ -21,17 +21,48 @@ describe('DocTool', () => {
         outputFormat: 'json',
       });
 
-      expect(cmd).toEqual(['ansible-doc', '-t', 'json', '-s', 'copy', '--json']);
+      expect(cmd).toEqual(['ansible-doc', '-s', 'copy', '--json']);
     });
 
-    it('builds list command with collection filter and yaml output', () => {
+    it('adds rolesPath, modulePath, playbookDir, and entryPoint for lookup', () => {
       const cmd = tool.buildCommand({
-        action: 'list',
-        collection: 'community.general',
-        outputFormat: 'yaml',
+        action: 'lookup',
+        module: 'copy',
+        rolesPath: './roles',
+        modulePath: './plugins/modules',
+        playbookDir: '.',
+        entryPoint: 'main',
       });
 
-      expect(cmd).toEqual(['ansible-doc', '-t', 'yaml', '-l', 'community.general', '--yaml']);
+      expect(cmd).toEqual(['ansible-doc', '-M', './plugins/modules', '--playbook-dir', '.', '-r', './roles', '-e', 'main', 'copy']);
+    });
+
+    it('emits -t for plugin type when not module', () => {
+      const cmd = tool.buildCommand({
+        action: 'lookup',
+        module: 'net_get',
+        pluginType: 'lookup',
+      });
+
+      expect(cmd).toEqual(['ansible-doc', '-t', 'lookup', 'net_get']);
+    });
+
+    it('does not emit -t when pluginType is module', () => {
+      const cmd = tool.buildCommand({
+        action: 'list',
+        pluginType: 'module',
+      });
+
+      expect(cmd).toEqual(['ansible-doc', '-l']);
+    });
+
+    it('builds list_files and metadata-dump actions', () => {
+      expect(tool.buildCommand({ action: 'list_files', collection: 'community.general' })).toEqual([
+        'ansible-doc',
+        '-F',
+        'community.general',
+      ]);
+      expect(tool.buildCommand({ action: 'metadata-dump' })).toEqual(['ansible-doc', '--metadata-dump']);
     });
   });
 
@@ -53,6 +84,7 @@ describe('DocTool', () => {
       const schema = tool.getParamSchema('lookup');
 
       expect(schema.find((field) => field.key === 'module')?.required).toBe(true);
+      expect(schema.find((field) => field.key === 'pluginType')?.defaultValue).toBe('module');
     });
 
     it('returns collection field for list action', () => {
@@ -60,6 +92,10 @@ describe('DocTool', () => {
 
       expect(schema.find((field) => field.key === 'collection')).toBeTruthy();
       expect(schema.find((field) => field.key === 'module')).toBeUndefined();
+    });
+
+    it('returns empty schema for metadata-dump', () => {
+      expect(tool.getParamSchema('metadata-dump')).toEqual([]);
     });
   });
 });

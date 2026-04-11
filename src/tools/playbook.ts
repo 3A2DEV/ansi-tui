@@ -1,7 +1,8 @@
 import { BaseTool } from './base.js';
 import type { ToolParams, ValidationError, ParamSchema } from './base.js';
+import { BECOME_PARAMS, SSH_PARAMS, VAULT_ASK_PARAMS } from './params.js';
 
-const PLAYBOOK_ACTIONS = ['run', 'check', 'diff', 'syntax-check'] as const;
+const PLAYBOOK_ACTIONS = ['run', 'check', 'diff', 'syntax-check', 'list-hosts', 'list-tasks', 'list-tags'] as const;
 
 export class PlaybookTool extends BaseTool {
   readonly name = 'ansible-playbook';
@@ -88,6 +89,15 @@ export class PlaybookTool extends BaseTool {
         description: 'SSH private key file',
       },
       {
+        key: 'modulePath',
+        label: 'Module path',
+        type: 'text',
+        isPath: true,
+        pathType: 'directory',
+        placeholder: './library',
+        description: 'Additional module search path',
+      },
+      {
         key: 'become',
         label: 'Become (sudo)',
         type: 'checkbox',
@@ -101,6 +111,7 @@ export class PlaybookTool extends BaseTool {
         placeholder: 'root',
         description: 'Run operations as this user',
       },
+      ...BECOME_PARAMS,
       {
         key: 'vaultPasswordFile',
         label: 'Vault password file',
@@ -114,6 +125,36 @@ export class PlaybookTool extends BaseTool {
         type: 'text',
         placeholder: 'dev@prompt',
         description: 'Vault identity to use',
+      },
+      ...VAULT_ASK_PARAMS,
+      ...SSH_PARAMS,
+      {
+        key: 'forceHandlers',
+        label: 'Force handlers',
+        type: 'checkbox',
+        defaultValue: false,
+        description: 'Run handlers even if a task fails',
+      },
+      {
+        key: 'flushCache',
+        label: 'Flush cache',
+        type: 'checkbox',
+        defaultValue: false,
+        description: 'Clear fact cache before running',
+      },
+      {
+        key: 'startAtTask',
+        label: 'Start at task',
+        type: 'text',
+        placeholder: 'Deploy app',
+        description: 'Start execution at the named task',
+      },
+      {
+        key: 'step',
+        label: 'Step',
+        type: 'checkbox',
+        defaultValue: false,
+        description: 'Confirm each task before running',
       },
     ];
 
@@ -175,17 +216,65 @@ export class PlaybookTool extends BaseTool {
     if (params['privateKey']) {
       cmd.push('--private-key', params['privateKey'] as string);
     }
+    if (params['modulePath']) {
+      cmd.push('-M', params['modulePath'] as string);
+    }
     if (params['become']) {
       cmd.push('--become');
     }
     if (params['becomeUser']) {
       cmd.push('--become-user', params['becomeUser'] as string);
     }
+    if (params['becomeMethod']) {
+      cmd.push('--become-method', params['becomeMethod'] as string);
+    }
+    if (params['remoteUser']) {
+      cmd.push('-u', params['remoteUser'] as string);
+    }
+    if (params['timeout']) {
+      cmd.push('-T', params['timeout'] as string);
+    }
+    if (params['askPass']) {
+      cmd.push('-k');
+    }
+    if (params['askBecomePass']) {
+      cmd.push('-K');
+    }
+    if (params['becomePasswordFile']) {
+      cmd.push('--become-password-file', params['becomePasswordFile'] as string);
+    }
     if (params['vaultPasswordFile']) {
       cmd.push('--vault-password-file', params['vaultPasswordFile'] as string);
     }
     if (params['vaultId']) {
       cmd.push('--vault-id', params['vaultId'] as string);
+    }
+    if (params['askVaultPass']) {
+      cmd.push('-J');
+    }
+    if (params['sshCommonArgs']) {
+      cmd.push('--ssh-common-args', params['sshCommonArgs'] as string);
+    }
+    if (params['sshExtraArgs']) {
+      cmd.push('--ssh-extra-args', params['sshExtraArgs'] as string);
+    }
+    if (params['sftpExtraArgs']) {
+      cmd.push('--sftp-extra-args', params['sftpExtraArgs'] as string);
+    }
+    if (params['scpExtraArgs']) {
+      cmd.push('--scp-extra-args', params['scpExtraArgs'] as string);
+    }
+    if (params['forceHandlers']) {
+      cmd.push('--force-handlers');
+    }
+    if (params['flushCache']) {
+      cmd.push('--flush-cache');
+    }
+    if (params['startAtTask']) {
+      cmd.push('--start-at-task', params['startAtTask'] as string);
+    }
+    if (params['step']) {
+      cmd.push('--step');
     }
 
     if (params.action === 'check') {
@@ -196,6 +285,15 @@ export class PlaybookTool extends BaseTool {
     }
     if (params.action === 'syntax-check') {
       cmd.push('--syntax-check');
+    }
+    if (params.action === 'list-hosts') {
+      cmd.push('--list-hosts');
+    }
+    if (params.action === 'list-tasks') {
+      cmd.push('--list-tasks');
+    }
+    if (params.action === 'list-tags') {
+      cmd.push('--list-tags');
     }
 
     return cmd;

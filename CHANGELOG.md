@@ -44,6 +44,7 @@ All notable changes to this project are documented here.
 - Updated form infrastructure so path-capable fields can open a file or directory browser without leaving the shared form flow
 - Updated `ansible-test` to require a collection root path, use it as execution `cwd`, and expose richer sanity options
 - Updated `LiveOutput` to parse ANSI SGR styles instead of showing raw escape sequences for colored tools
+- Expanded command coverage across the tool surface to match the current local CLI more closely, including new playbook, galaxy, vault, doc, config, lint, builder, creator, console, pull, and test actions and options
 
 ### Fixed
 
@@ -69,42 +70,50 @@ All notable changes to this project are documented here.
 - Fixed inventory command building to ignore unknown `outputFormat` values outside the runtime allowlist
 - Fixed jobs history file path construction by sanitizing `sessionId` before writing under `history/`
 - Fixed job deletion so only log files inside the managed `logs/` directory are eligible for unlinking
+- Fixed `ansible-config list` so it no longer exposes unsupported `--only-changed`
+- Fixed `ansible-pull` so it no longer exposes unsupported local-CLI become flags
+- Fixed `ansible-builder build` so it no longer exposes unsupported local-CLI `--pull`
+- Fixed `ansible-creator` navigation and tool actions so invalid local action `init role` is no longer exposed
+- Fixed `ansible-test env` so it no longer inherits unsupported `--python`
 
 ### Tool Workflows
 
 - `ansible-playbook`
-  - actions: `run`, `check`, `diff`, `syntax-check`
-  - supports inventory, limit, tags, skip-tags, extra vars, verbosity, forks, connection, private key, become, vault password file, and vault ID
+  - actions: `run`, `check`, `diff`, `syntax-check`, `list-hosts`, `list-tasks`, `list-tags`
+  - supports inventory, limit, tags, skip-tags, extra vars, verbosity, forks, connection, private key, module path, become controls, vault prompts/files, SSH args, cache flushing, handler forcing, start-at-task, and step mode
 - `ansible-galaxy`
-  - actions: `role install`, `role list`, `role remove`, `role init`, `role search`, `collection install`, `collection list`, `collection remove`, `collection init`, `collection search`
-  - supports target names, requirements files, force/upgrade, server URL, roles path, collections path, and init path
+  - actions: `role install`, `role list`, `role remove`, `role init`, `role search`, `role info`, `role import`, `role delete`, `role setup`, `collection install`, `collection list`, `collection init`, `collection build`, `collection publish`, `collection download`, `collection verify`
+  - supports target names, requirements files, force/upgrade, server URL, API tokens, cert controls, install-time timeout/dependency flags, roles path, collections path, init path, and collection build/publish/download/verify flows
 - `ansible-vault`
-  - actions: `encrypt`, `decrypt`, `view`, `edit`, `rekey`, `encrypt_string`
-  - supports vault password files, vault IDs, output files, rekey password rotation, and string encryption naming
+  - actions: `create`, `encrypt`, `decrypt`, `view`, `edit`, `rekey`, `encrypt_string`
+  - supports vault password files, vault IDs, vault prompts, encrypt-vault-id, output files, rekey password rotation, skip-tty-check, and string encryption naming/prompt controls
 - `ansible-inventory`
   - actions: `list`, `host`, `graph`
-  - supports inventory source, output format, export mode, vars view, and host lookup
+  - supports inventory source, output format, export mode, vars view, host lookup, graph groups, output files, limits, extra vars, vault controls, cache flushing, and playbook-dir
 - `ansible-doc`
-  - actions: `lookup`, `list`
-  - supports module lookup, collection filtering, snippet mode, and text/json/yaml output selection
+  - actions: `lookup`, `list`, `list_files`, `metadata-dump`
+  - supports plugin lookup, collection filtering, plugin type selection, snippet mode, text/json output, roles path, entry point, module path, and playbook-dir
 - `ansible-config`
-  - actions: `list`, `dump`, `view`, `init`
-  - supports alternate config file selection, changed-only filtering, and sample config generation
+  - actions: `list`, `dump`, `view`, `init`, `validate`
+  - supports alternate config file selection, type/format filtering, dump-only changed filtering, validation, and sample config generation
 - `ansible-lint`
-  - actions: `run`, `list-rules`, `list-tags`
-  - supports profiles, custom rules dir, excludes, skip lists, auto-fix, tags, warn lists, and multiple output formats
+  - actions: `run`, `list-rules`, `list-tags`, `list-profiles`
+  - supports profiles, custom rules dir, excludes, skip lists, auto-fix, strict mode, tags, warn lists, config/ignore files, project dir, enable-list, SARIF output, offline mode, and multiple output formats
 - `ansible-builder`
   - actions: `build`, `create`, `introspect`
-  - supports definition files, image tags, pull policy, container runtime, build context, and verbosity
+  - supports definition files, image tags, container runtime, build context, verbosity, no-cache, build args, prune-images, squash, output filename, and Galaxy signature options
 - `ansible-creator`
-  - actions: `init collection`, `init role`, `init playbook`
-  - supports namespace, collection name, role name, project name, output directory, and force overwrite
+  - actions: `init collection`, `init playbook`, `init execution_env`, `add resource`, `add plugin`
+  - supports namespace, collection name, project name, execution environment name, output directory, project root, resource type, plugin type, plugin name, and overwrite behavior aligned to the local CLI
 - `ansible-test`
-  - actions: `units`, `integration`, `sanity`
-  - supports collection path, test target, Python version, verbosity, Docker, Podman, remote target, requirements file, sanity test filtering, and `--list-tests`
+  - actions: `units`, `integration`, `sanity`, `coverage`, `env`, `shell`, `network-integration`, `windows-integration`
+  - supports collection path, test target, Python version, verbosity, container mode selection, Docker image overrides, remote target, requirements file, coverage/change detection controls, sanity test filtering, and `--list-tests`
 - `ansible-console`
   - actions: `start`
-  - supports inventory, host limit, become, become user, module path, and vault password file
+  - supports host pattern, inventory, host limit, become controls, module path, vault prompts/files, forks, extra vars, verbosity, connection settings, playbook-dir, task-timeout, step/check/diff, cache flushing, and host listing
+- `ansible-pull`
+  - actions: `pull`
+  - supports URL, checkout ref, working directory, playbook, module path, extra vars, tags, skip-tags, limit, full/clean/track-subs, host-key acceptance, module name, force/only-if-changed, sleep, inventory, cache flushing, host listing, vault prompts/files, connection settings, and SSH args
 
 ### Runtime Detection
 
@@ -144,4 +153,5 @@ All notable changes to this project are documented here.
 - Tested with Vitest across core modules, tools, components, screens, and hooks
 - Expanded Vitest coverage to include dedicated tests for `config`, `console`, `doc`, `lint`, `builder`, `creator`, and hook-level path-picker behavior
 - Added picker-related coverage for `FilePicker`, `FormViewport`, `FormField`, and `usePathPicker`
-- Current suite status: `230/230` tests passing
+- Expanded tool coverage tests for `pull`, `config`, `builder`, `creator`, and `test` local-CLI alignment regressions
+- Current suite status: `286/286` tests passing

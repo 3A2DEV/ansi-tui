@@ -14,6 +14,9 @@ describe('PlaybookTool', () => {
     expect(actions).toContain('check');
     expect(actions).toContain('diff');
     expect(actions).toContain('syntax-check');
+    expect(actions).toContain('list-hosts');
+    expect(actions).toContain('list-tasks');
+    expect(actions).toContain('list-tags');
   });
 
   describe('buildCommand', () => {
@@ -112,10 +115,48 @@ describe('PlaybookTool', () => {
       expect(cmd).toContain('--syntax-check');
     });
 
+    it('adds playbook list actions', () => {
+      expect(tool.buildCommand({ action: 'list-hosts', playbook: 'site.yml' })).toContain('--list-hosts');
+      expect(tool.buildCommand({ action: 'list-tasks', playbook: 'site.yml' })).toContain('--list-tasks');
+      expect(tool.buildCommand({ action: 'list-tags', playbook: 'site.yml' })).toContain('--list-tags');
+    });
+
     it('adds connection type', () => {
       const cmd = tool.buildCommand({ action: 'run', playbook: 'site.yml', connection: 'local' });
       expect(cmd).toContain('-c');
       expect(cmd).toContain('local');
+    });
+
+    it('adds high-priority connection and privilege flags', () => {
+      const cmd = tool.buildCommand({
+        action: 'run',
+        playbook: 'site.yml',
+        remoteUser: 'ansible',
+        timeout: '15',
+        askPass: true,
+        askBecomePass: true,
+        askVaultPass: true,
+        becomeMethod: 'sudo',
+        becomePasswordFile: '.become-pass',
+        forceHandlers: true,
+        flushCache: true,
+        startAtTask: 'Deploy app',
+        step: true,
+        modulePath: './library',
+      });
+
+      expect(cmd).toContain('-M');
+      expect(cmd).toContain('--become-method');
+      expect(cmd).toContain('-u');
+      expect(cmd).toContain('-T');
+      expect(cmd).toContain('-k');
+      expect(cmd).toContain('-K');
+      expect(cmd).toContain('--become-password-file');
+      expect(cmd).toContain('-J');
+      expect(cmd).toContain('--force-handlers');
+      expect(cmd).toContain('--flush-cache');
+      expect(cmd).toContain('--start-at-task');
+      expect(cmd).toContain('--step');
     });
 
     it('returns just binary when no playbook given', () => {
@@ -156,6 +197,13 @@ describe('PlaybookTool', () => {
       const schema = tool.getParamSchema('diff');
       const diffField = schema.find((f) => f.key === 'diffMode');
       expect(diffField).toBeTruthy();
+    });
+
+    it('returns added high-priority fields for run action', () => {
+      const schema = tool.getParamSchema('run');
+      expect(schema.find((field) => field.key === 'askVaultPass')).toBeTruthy();
+      expect(schema.find((field) => field.key === 'becomeMethod')).toBeTruthy();
+      expect(schema.find((field) => field.key === 'modulePath')).toBeTruthy();
     });
   });
 });

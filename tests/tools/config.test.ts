@@ -9,18 +9,18 @@ describe('ConfigTool', () => {
   });
 
   it('returns all actions', () => {
-    expect(tool.getActions()).toEqual(['list', 'dump', 'view', 'init']);
+    expect(tool.getActions()).toEqual(['list', 'dump', 'view', 'init', 'validate']);
   });
 
   describe('buildCommand', () => {
-    it('builds list command with config file and only-changed flag', () => {
+    it('builds list command without only-changed flag support', () => {
       const cmd = tool.buildCommand({
         action: 'list',
         configFile: 'ansible.cfg',
         onlyChanged: true,
       });
 
-      expect(cmd).toEqual(['ansible-config', 'list', '-c', 'ansible.cfg', '--only-changed']);
+      expect(cmd).toEqual(['ansible-config', 'list', '-c', 'ansible.cfg']);
     });
 
     it('builds init command with output file and disabled flag', () => {
@@ -31,6 +31,25 @@ describe('ConfigTool', () => {
       });
 
       expect(cmd).toEqual(['ansible-config', 'init', './ansible.cfg', '--disabled']);
+    });
+
+    it('builds validate command with config file', () => {
+      const cmd = tool.buildCommand({
+        action: 'validate',
+        configFile: 'ansible.cfg',
+      });
+
+      expect(cmd).toEqual(['ansible-config', 'validate', '-c', 'ansible.cfg']);
+    });
+
+    it('builds dump command with type and format', () => {
+      const cmd = tool.buildCommand({
+        action: 'dump',
+        configType: 'inventory',
+        format: 'yaml',
+      });
+
+      expect(cmd).toEqual(['ansible-config', 'dump', '-t', 'inventory', '-f', 'yaml']);
     });
   });
 
@@ -52,6 +71,19 @@ describe('ConfigTool', () => {
       const schema = tool.getParamSchema('view');
 
       expect(schema.find((field) => field.key === 'configFile')?.type).toBe('file');
+    });
+
+    it('returns common configFile field for validate action', () => {
+      const schema = tool.getParamSchema('validate');
+
+      expect(schema.find((field) => field.key === 'configFile')?.type).toBe('file');
+    });
+
+    it('returns type and format fields for dump action', () => {
+      const schema = tool.getParamSchema('dump');
+
+      expect(schema.find((field) => field.key === 'configType')?.type).toBe('select');
+      expect(schema.find((field) => field.key === 'format')?.type).toBe('select');
     });
   });
 });

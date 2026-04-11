@@ -10,6 +10,7 @@ describe('VaultTool', () => {
 
   it('returns all actions', () => {
     const actions = tool.getActions();
+    expect(actions).toContain('create');
     expect(actions).toContain('encrypt');
     expect(actions).toContain('decrypt');
     expect(actions).toContain('view');
@@ -19,6 +20,11 @@ describe('VaultTool', () => {
   });
 
   describe('buildCommand', () => {
+    it('builds create command with skip tty check', () => {
+      const cmd = tool.buildCommand({ action: 'create', file: 'secrets.yml', skipTtyCheck: true });
+      expect(cmd).toEqual(['ansible-vault', 'create', '--skip-tty-check', 'secrets.yml']);
+    });
+
     it('builds encrypt command', () => {
       const cmd = tool.buildCommand({ action: 'encrypt', file: 'secrets.yml' });
       expect(cmd).toEqual(['ansible-vault', 'encrypt', 'secrets.yml']);
@@ -101,6 +107,23 @@ describe('VaultTool', () => {
       expect(cmd).toContain('--output');
       expect(cmd).toContain('encrypted.yml');
     });
+
+    it('adds vault prompt and encrypt options', () => {
+      const cmd = tool.buildCommand({
+        action: 'encrypt_string',
+        plaintext: 'secret',
+        askVaultPass: true,
+        encryptVaultId: 'dev',
+        prompt: true,
+        showInput: true,
+        stdinName: 'db_password',
+      });
+      expect(cmd).toContain('-J');
+      expect(cmd).toContain('--encrypt-vault-id');
+      expect(cmd).toContain('--prompt');
+      expect(cmd).toContain('--show-input');
+      expect(cmd).toContain('--stdin-name');
+    });
   });
 
   describe('validate', () => {
@@ -139,6 +162,11 @@ describe('VaultTool', () => {
       expect(fileField?.required).toBe(true);
     });
 
+    it('returns skipTtyCheck for create action', () => {
+      const schema = tool.getParamSchema('create');
+      expect(schema.find((field) => field.key === 'skipTtyCheck')).toBeTruthy();
+    });
+
     it('returns plaintext field for encrypt_string action', () => {
       const schema = tool.getParamSchema('encrypt_string');
       const plainField = schema.find((f) => f.key === 'plaintext');
@@ -151,6 +179,11 @@ describe('VaultTool', () => {
       const newPassField = schema.find((f) => f.key === 'newVaultPasswordFile');
       expect(newPassField).toBeTruthy();
       expect(newPassField?.required).toBe(true);
+    });
+
+    it('returns askVaultPass for encrypt action', () => {
+      const schema = tool.getParamSchema('encrypt');
+      expect(schema.find((field) => field.key === 'askVaultPass')).toBeTruthy();
     });
   });
 });

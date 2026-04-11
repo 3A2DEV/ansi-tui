@@ -1,23 +1,48 @@
 {
-  "name": "ansi-tui",
+  "name": "@3a2dev/ansi-tui",
   "version": "0.1.0",
   "description": "Ansible Terminal User Interface",
   "type": "module",
+  "author": "3A2DEV",
+  "packageManager": "npm@11.12.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3A2DEV/ansi-tui.git"
+  },
+  "homepage": "https://github.com/3A2DEV/ansi-tui#readme",
+  "bugs": {
+    "url": "https://github.com/3A2DEV/ansi-tui/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "ansi-tui": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "install.sh"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:core": "vitest run tests/core",
     "test:tools": "vitest run tests/tools",
     "test:components": "vitest run tests/components",
     "test:screens": "vitest run tests/screens",
     "test:hooks": "vitest run tests/hooks",
+    "test:package": "vitest run tests/package",
     "test:watch": "vitest",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx",
+    "pack:check": "npm pack --dry-run",
+    "verify": "npm run typecheck && npm run lint && npm test && npm run build",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "chalk": "^5.0.0",

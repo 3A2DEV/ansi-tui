@@ -2,8 +2,8 @@
 # ansi-tui installer
 # Usage:
 #   Online:        ./install.sh
-#   From npm pack: ./install.sh --local ./ansi-tui-0.1.0.tgz
-#   No install:    npx ansi-tui
+#   From npm pack: ./install.sh --local ./3a2dev-ansi-tui-0.1.0.tgz
+#   No install:    npx @3a2dev/ansi-tui
 set -euo pipefail
 
 PREFIX="${HOME}/.local"
@@ -18,7 +18,7 @@ fi
 mkdir -p "${PREFIX}/lib" "${PREFIX}/bin"
 
 if [[ "${MODE}" == "online" ]]; then
-  npm install -g --prefix "${PREFIX}" ansi-tui
+  npm install -g --prefix "${PREFIX}" @3a2dev/ansi-tui
 else
   npm install -g --prefix "${PREFIX}" "${TARBALL}"
 fi

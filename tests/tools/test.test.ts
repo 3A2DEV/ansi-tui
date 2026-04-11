@@ -5,8 +5,17 @@ describe('TestTool', () => {
   const tool = new TestTool();
 
   describe('getActions()', () => {
-    it('returns sanity, units, integration', () => {
-      expect(tool.getActions()).toEqual(['units', 'integration', 'sanity']);
+    it('returns all supported ansible-test actions', () => {
+      expect(tool.getActions()).toEqual([
+        'units',
+        'integration',
+        'sanity',
+        'coverage',
+        'env',
+        'shell',
+        'network-integration',
+        'windows-integration',
+      ]);
     });
   });
 
@@ -17,32 +26,44 @@ describe('TestTool', () => {
       }
     });
 
-    it('includes testFilter and listTests for sanity', () => {
+    it('includes sanity-specific options', () => {
       const schema = tool.getParamSchema('sanity');
       expect(schema.some((field) => field.key === 'testFilter')).toBe(true);
       expect(schema.some((field) => field.key === 'listTests')).toBe(true);
+      expect(schema.some((field) => field.key === 'skipTest')).toBe(true);
+      expect(schema.some((field) => field.key === 'junit')).toBe(true);
+      expect(schema.some((field) => field.key === 'local')).toBe(true);
+      expect(schema.some((field) => field.key === 'containerMode')).toBe(false);
     });
 
-    it('does NOT include docker for sanity', () => {
-      const schema = tool.getParamSchema('sanity');
-      expect(schema.some((field) => field.key === 'docker')).toBe(false);
+    it('includes coverage options for coverage action', () => {
+      const schema = tool.getParamSchema('coverage');
+      expect(schema.some((field) => field.key === 'coverageAction')).toBe(true);
+      expect(schema.some((field) => field.key === 'color')).toBe(true);
+      expect(schema.some((field) => field.key === 'debug')).toBe(true);
+      expect(schema.some((field) => field.key === 'testTarget')).toBe(false);
     });
 
-    it('includes docker and podman for units', () => {
+    it('includes containerMode and dockerImage for units and integration-like actions', () => {
+      for (const action of ['units', 'integration', 'network-integration', 'windows-integration', 'shell']) {
+        const schema = tool.getParamSchema(action);
+        expect(schema.some((field) => field.key === 'containerMode')).toBe(true);
+        expect(schema.some((field) => field.key === 'dockerImage')).toBe(true);
+      }
+    });
+
+    it('includes common coverage and debug options for units', () => {
       const schema = tool.getParamSchema('units');
-      expect(schema.some((field) => field.key === 'docker')).toBe(true);
-      expect(schema.some((field) => field.key === 'podman')).toBe(true);
+      expect(schema.some((field) => field.key === 'coverage')).toBe(true);
+      expect(schema.some((field) => field.key === 'changed')).toBe(true);
+      expect(schema.some((field) => field.key === 'baseBranch')).toBe(true);
+      expect(schema.some((field) => field.key === 'color')).toBe(true);
+      expect(schema.some((field) => field.key === 'debug')).toBe(true);
     });
 
-    it('includes docker and podman for integration', () => {
-      const schema = tool.getParamSchema('integration');
-      expect(schema.some((field) => field.key === 'docker')).toBe(true);
-      expect(schema.some((field) => field.key === 'podman')).toBe(true);
-    });
-
-    it('does NOT include testFilter for units', () => {
-      const schema = tool.getParamSchema('units');
-      expect(schema.some((field) => field.key === 'testFilter')).toBe(false);
+    it('does not include python for env action', () => {
+      const schema = tool.getParamSchema('env');
+      expect(schema.some((field) => field.key === 'python')).toBe(false);
     });
   });
 
@@ -53,40 +74,97 @@ describe('TestTool', () => {
       expect(command).not.toContain('/path/to/col');
     });
 
-    it('builds sanity command with --test filter', () => {
-      const command = tool.buildCommand({ action: 'sanity', collectionPath: '/path', testFilter: 'pylint' });
+    it('builds sanity command with filters and common toggles', () => {
+      const command = tool.buildCommand({
+        action: 'sanity',
+        collectionPath: '/path',
+        testFilter: 'pylint',
+        skipTest: 'validate-modules',
+        allowDisabled: true,
+        listTests: true,
+        junit: true,
+        lint: true,
+        local: true,
+        coverage: true,
+        changed: true,
+        baseBranch: 'main',
+        color: 'yes',
+        debug: true,
+      });
       expect(command).toContain('--test');
-      expect(command).toContain('pylint');
-    });
-
-    it('builds sanity command with --list-tests', () => {
-      const command = tool.buildCommand({ action: 'sanity', collectionPath: '/path', listTests: true });
+      expect(command).toContain('--skip-test');
+      expect(command).toContain('--allow-disabled');
       expect(command).toContain('--list-tests');
+      expect(command).toContain('--junit');
+      expect(command).toContain('--lint');
+      expect(command).toContain('--local');
+      expect(command).toContain('--coverage');
+      expect(command).toContain('--changed');
+      expect(command).toContain('--base-branch');
+      expect(command).toContain('--color');
+      expect(command).toContain('--debug');
     });
 
-    it('builds units command with --docker', () => {
-      const command = tool.buildCommand({ action: 'units', collectionPath: '/path', docker: true });
-      expect(command).toContain('--docker');
+    it('builds units command with docker container mode', () => {
+      const command = tool.buildCommand({ action: 'units', collectionPath: '/path', containerMode: 'docker', dockerImage: 'quay.io/example/test:latest' });
+      expect(command).toEqual(['ansible-test', 'units', '--docker', 'quay.io/example/test:latest']);
     });
 
-    it('builds units command with --python 3.12', () => {
-      const command = tool.buildCommand({ action: 'units', collectionPath: '/path', python: '3.12' });
-      expect(command).toContain('--python');
-      expect(command).toContain('3.12');
+    it('builds shell command with venv container mode', () => {
+      const command = tool.buildCommand({ action: 'shell', collectionPath: '/path', containerMode: 'venv' });
+      expect(command).toEqual(['ansible-test', 'shell', '--venv']);
     });
 
-    it('builds integration command with --target remote_host', () => {
-      const command = tool.buildCommand({ action: 'integration', collectionPath: '/path', remote: 'remote_host' });
+    it('builds coverage command with coverage subcommand', () => {
+      const command = tool.buildCommand({ action: 'coverage', collectionPath: '/path', coverageAction: 'html', color: 'auto', debug: true });
+      expect(command).toEqual(['ansible-test', 'coverage', 'html', '--color', 'auto', '--debug']);
+    });
+
+    it('builds env command without test target argv', () => {
+      const command = tool.buildCommand({ action: 'env', collectionPath: '/path', verbosity: '-v' });
+      expect(command).toEqual(['ansible-test', 'env', '-v']);
+    });
+
+    it('ignores python for env action', () => {
+      const command = tool.buildCommand({ action: 'env', collectionPath: '/path', verbosity: '-v', python: '3.12' });
+      expect(command).toEqual(['ansible-test', 'env', '-v']);
+    });
+
+    it('builds integration command with target, remote, and common options', () => {
+      const command = tool.buildCommand({
+        action: 'integration',
+        collectionPath: '/path',
+        testTarget: 'tests/integration/targets/ping',
+        remote: 'remote_host',
+        requirements: 'requirements.txt',
+        coverage: true,
+        changed: true,
+        baseBranch: 'main',
+        color: 'no',
+        debug: true,
+      });
+      expect(command).toContain('tests/integration/targets/ping');
       expect(command).toContain('--target');
       expect(command).toContain('remote_host');
+      expect(command).toContain('--requirements');
+      expect(command).toContain('--coverage');
+      expect(command).toContain('--changed');
+      expect(command).toContain('--base-branch');
+      expect(command).toContain('--color');
+      expect(command).toContain('--debug');
     });
 
-    it('does NOT add --python when python is default', () => {
+    it('builds windows-integration command with test target', () => {
+      const command = tool.buildCommand({ action: 'windows-integration', collectionPath: '/path', testTarget: 'tests/integration/targets/win_ping' });
+      expect(command).toEqual(['ansible-test', 'windows-integration', 'tests/integration/targets/win_ping']);
+    });
+
+    it('does not add --python when python is default', () => {
       const command = tool.buildCommand({ action: 'units', collectionPath: '/path', python: 'default' });
       expect(command).not.toContain('--python');
     });
 
-    it('does NOT add verbosity when verbosity is default', () => {
+    it('does not add verbosity when verbosity is default', () => {
       const command = tool.buildCommand({ action: 'units', collectionPath: '/path', verbosity: 'default' });
       expect(command).not.toContain('default');
     });
@@ -99,14 +177,13 @@ describe('TestTool', () => {
       expect(errors[0]?.field).toBe('collectionPath');
     });
 
-    it('returns no errors when collectionPath is set and action is valid', () => {
+    it('returns no errors when collectionPath is set for sanity', () => {
       const errors = tool.validate({ action: 'sanity', collectionPath: '/path/to/collection' });
       expect(errors).toHaveLength(0);
     });
 
-    it('returns error when both docker and podman are true', () => {
-      const errors = tool.validate({ action: 'units', collectionPath: '/x', docker: true, podman: true });
-      expect(errors.some((error) => error.field === 'podman')).toBe(true);
+    it('returns no errors for env with collectionPath set', () => {
+      expect(tool.validate({ action: 'env', collectionPath: '/path/to/collection' })).toHaveLength(0);
     });
   });
 });

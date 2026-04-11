@@ -1,46 +1,16 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Box, Text, useInput } from 'ink';
 import type { ToolInfo, AnsibleToolName } from '../models/tool.js';
+import { WRAPPED_TOOL_DEFINITIONS } from '../utils/toolRegistry.js';
 import { useThemePalette } from './theme.js';
-
-// Unicode tool icons — conveys purpose at a glance.
-// Available tools show their specific icon; unavailable tools show ○.
-const TOOL_ICONS: Record<string, string> = {
-  playbook:    '▶',   // execute/run
-  galaxy:      '◈',   // collection/star
-  vault:       '◆',   // locked/secure
-  inventory:   '⊞',   // grid/list
-  docs:        '≡',   // document lines
-  config:      '⚙',   // settings gear
-  test:        '◉',   // bullseye/test
-  builder:     '⬡',   // build/hex structure
-  lint:        '⚑',   // flag/audit
-  creator:     '⊕',   // add/create
-  jobs:        '⊡',   // job/task list
-  sessions:    '◐',   // half-filled/workspace
-};
-
-const TOOL_ACTIONS: Record<string, readonly string[]> = {
-  playbook:  ['run', 'check', 'diff', 'syntax-check'],
-  galaxy:    [
-    'role install', 'role list', 'role remove', 'role init', 'role search',
-    'collection install', 'collection list', 'collection remove', 'collection init', 'collection search',
-  ],
-  vault:     ['encrypt', 'decrypt', 'view', 'edit', 'rekey', 'encrypt_string'],
-  inventory: ['list', 'host', 'graph'],
-  docs:      ['lookup', 'list'],
-  config:    ['list', 'dump', 'view', 'init'],
-  test:      ['units', 'integration', 'sanity'],
-  builder:   ['build', 'create', 'introspect'],
-  lint:      ['run', 'list-rules', 'list-tags'],
-  creator:   ['init collection', 'init role', 'init playbook'],
-};
 
 interface SidebarEntry {
   readonly id: string;
   readonly name: string;
   readonly screen: string;
   readonly toolName: AnsibleToolName | null;
+  readonly icon: string;
+  readonly actions?: readonly string[];
 }
 
 interface SidebarGroup {
@@ -49,21 +19,12 @@ interface SidebarGroup {
 }
 
 const WORKSPACE_ENTRIES: readonly SidebarEntry[] = [
-  { id: 'playbook',  name: 'Playbook',  screen: 'playbook',  toolName: 'ansible-playbook'  },
-  { id: 'galaxy',    name: 'Galaxy',    screen: 'galaxy',    toolName: 'ansible-galaxy'    },
-  { id: 'vault',     name: 'Vault',     screen: 'vault',     toolName: 'ansible-vault'     },
-  { id: 'inventory', name: 'Inventory', screen: 'inventory', toolName: 'ansible-inventory' },
-  { id: 'docs',      name: 'Docs',      screen: 'docs',      toolName: 'ansible-doc'       },
-  { id: 'config',    name: 'Config',    screen: 'config',    toolName: 'ansible-config'    },
-  { id: 'test',      name: 'Test',      screen: 'test',      toolName: 'ansible-test'      },
-  { id: 'builder',   name: 'Builder',   screen: 'builder',   toolName: 'ansible-builder'   },
-  { id: 'lint',      name: 'Lint',      screen: 'lint',      toolName: 'ansible-lint'      },
-  { id: 'creator',   name: 'Creator',   screen: 'creator',   toolName: 'ansible-creator'   },
+  ...WRAPPED_TOOL_DEFINITIONS,
 ];
 
 const MANAGEMENT_ENTRIES: readonly SidebarEntry[] = [
-  { id: 'jobs',        name: 'Jobs',        screen: 'jobs',        toolName: null },
-  { id: 'sessions',    name: 'Sessions',    screen: 'sessions',    toolName: null },
+  { id: 'jobs',        name: 'Jobs',        screen: 'jobs',        toolName: null, icon: '⊡' },
+  { id: 'sessions',    name: 'Sessions',    screen: 'sessions',    toolName: null, icon: '◐' },
 ];
 
 const SIDEBAR_GROUPS: readonly SidebarGroup[] = [
@@ -106,8 +67,8 @@ const buildVirtualList = (expandedToolId: string | null): VirtualItem[] => {
     group.entries.forEach((entry) => {
       const entryIndex = allEntries.findIndex((e) => e.id === entry.id);
       items.push({ kind: 'entry', entry, entryIndex });
-      if (expandedToolId === entry.id && TOOL_ACTIONS[entry.id]) {
-        for (const action of TOOL_ACTIONS[entry.id]) {
+      if (expandedToolId === entry.id && entry.actions) {
+        for (const action of entry.actions) {
           items.push({ kind: 'sub-action', action, parentEntry: entry });
         }
       }
@@ -167,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (disabled) return;
 
     if (expandedTool !== null) {
-      const actions = TOOL_ACTIONS[expandedTool] ?? [];
+      const actions = allEntries.find((entry) => entry.id === expandedTool)?.actions ?? [];
 
       if (key.upArrow) {
         setSubFocusIndex((prev) => Math.max(0, prev - 1));
@@ -209,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
     if (key.return || key.rightArrow) {
       const entry = allEntries[focusIndex];
-      if (entry && TOOL_ACTIONS[entry.id] && isAvailable(entry)) {
+      if (entry && entry.actions && isAvailable(entry)) {
         setExpandedTool(entry.id);
         setSubFocusIndex(0);
         return;
@@ -233,7 +194,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const focusedVirtualIdx = displayExpandedTool !== null
     ? (() => {
         const action = expandedTool !== null
-          ? (TOOL_ACTIONS[expandedTool] ?? [])[subFocusIndex]
+          ? (allEntries.find((entry) => entry.id === expandedTool)?.actions ?? [])[subFocusIndex]
           : activeAction;
         return VIRTUAL_LIST.findIndex(
           (item) => item.kind === 'sub-action' && item.parentEntry.id === displayExpandedTool && item.action === action
@@ -276,7 +237,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     const available = isAvailable(entry);
     const isActive  = activeScreen === entry.screen;
     const isFocused = focusIndex === entryIndex && !disabled;
-    const icon      = available ? (TOOL_ICONS[entry.id] ?? '▸') : '○';
+    const icon      = available ? entry.icon : '○';
     const version   = entry.toolName !== null
       ? (tools.get(entry.toolName)?.version ?? null)
       : null;
@@ -382,7 +343,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             const isSubFocused =
               expandedTool !== null &&
               expandedTool === item.parentEntry.id &&
-              TOOL_ACTIONS[expandedTool]?.[subFocusIndex] === item.action;
+              (allEntries.find((entry) => entry.id === expandedTool)?.actions ?? [])[subFocusIndex] === item.action;
 
             const isSubActive =
               activeScreen === item.parentEntry.screen &&

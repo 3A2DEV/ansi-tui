@@ -13,6 +13,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  package-readiness:
+    name: Package readiness
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run full test suite
+        run: npm test
+
+      - name: Build package
+        run: npm run build
+
+      - name: Check published tarball
+        run: npm run pack:check
+
   test-node-suite:
     name: Run ${{ matrix.suite }} tests
     runs-on: ubuntu-latest

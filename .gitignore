@@ -13,6 +13,7 @@ Thumbs.db
 .idea/
 
 # Agents
+skills-lock.json
 .agents/
 .claude/
 .qwen/

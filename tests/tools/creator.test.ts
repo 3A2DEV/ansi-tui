@@ -9,7 +9,13 @@ describe('CreatorTool', () => {
   });
 
   it('returns all actions', () => {
-    expect(tool.getActions()).toEqual(['init collection', 'init role', 'init playbook']);
+    expect(tool.getActions()).toEqual([
+      'init collection',
+      'init playbook',
+      'init execution_env',
+      'add resource',
+      'add plugin',
+    ]);
   });
 
   describe('buildCommand', () => {
@@ -25,29 +31,54 @@ describe('CreatorTool', () => {
       expect(cmd).toEqual([
         'ansible-creator',
         'init',
+        'collection',
         'acme.platform',
         './collections',
         '--force',
       ]);
     });
 
-    it('builds init role command', () => {
-      const cmd = tool.buildCommand({
-        action: 'init role',
-        roleName: 'web',
-        outputDir: './roles',
-      });
-
-      expect(cmd).toEqual(['ansible-creator', 'init', 'role', 'web', './roles']);
-    });
-
-    it('builds init playbook command', () => {
+    it('builds init playbook command with output directory', () => {
       const cmd = tool.buildCommand({
         action: 'init playbook',
         projectName: 'site',
+        outputDir: './playbooks',
       });
 
-      expect(cmd).toEqual(['ansible-creator', 'init', 'playbook', 'site']);
+      expect(cmd).toEqual(['ansible-creator', 'init', 'playbook', 'site', './playbooks']);
+    });
+
+    it('builds init execution_env command', () => {
+      const cmd = tool.buildCommand({
+        action: 'init execution_env',
+        eeName: 'my-ee',
+        outputDir: './ee',
+        force: true,
+      });
+
+      expect(cmd).toEqual(['ansible-creator', 'init', 'execution_env', '--ee-name', 'my-ee', './ee', '--force']);
+    });
+
+    it('builds add resource command', () => {
+      const cmd = tool.buildCommand({
+        action: 'add resource',
+        resourceType: 'devcontainer',
+        projectRoot: './project',
+        force: true,
+      });
+
+      expect(cmd).toEqual(['ansible-creator', 'add', 'resource', 'devcontainer', './project', '-o']);
+    });
+
+    it('builds add plugin command', () => {
+      const cmd = tool.buildCommand({
+        action: 'add plugin',
+        pluginType: 'module',
+        pluginName: 'my_plugin',
+        projectRoot: './collection',
+      });
+
+      expect(cmd).toEqual(['ansible-creator', 'add', 'plugin', 'module', 'my_plugin', './collection']);
     });
   });
 
@@ -58,18 +89,24 @@ describe('CreatorTool', () => {
       expect(errors.map((error) => error.field)).toEqual(['namespace', 'collectionName']);
     });
 
-    it('returns role-specific error when roleName is missing', () => {
-      const errors = tool.validate({ action: 'init role' });
-
-      expect(errors).toHaveLength(1);
-      expect(errors[0]?.field).toBe('roleName');
-    });
-
     it('returns playbook-specific error when projectName is missing', () => {
       const errors = tool.validate({ action: 'init playbook' });
 
       expect(errors).toHaveLength(1);
       expect(errors[0]?.field).toBe('projectName');
+    });
+
+    it('returns execution environment specific error when eeName is missing', () => {
+      const errors = tool.validate({ action: 'init execution_env' });
+
+      expect(errors).toHaveLength(1);
+      expect(errors[0]?.field).toBe('eeName');
+    });
+
+    it('returns plugin-specific errors when required fields are missing', () => {
+      const errors = tool.validate({ action: 'add plugin' });
+
+      expect(errors.map((error) => error.field)).toEqual(['pluginType', 'pluginName']);
     });
   });
 
@@ -85,6 +122,12 @@ describe('CreatorTool', () => {
       const schema = tool.getParamSchema('init playbook');
 
       expect(schema.find((field) => field.key === 'projectName')?.required).toBe(true);
+    });
+
+    it('returns resourceType for add resource action', () => {
+      const schema = tool.getParamSchema('add resource');
+
+      expect(schema.find((field) => field.key === 'resourceType')?.type).toBe('select');
     });
   });
 });

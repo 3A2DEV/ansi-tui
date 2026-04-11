@@ -1,7 +1,7 @@
 import { BaseTool } from './base.js';
 import type { ToolParams, ValidationError, ParamSchema } from './base.js';
 
-const CONFIG_ACTIONS = ['list', 'dump', 'view', 'init'] as const;
+const CONFIG_ACTIONS = ['list', 'dump', 'view', 'init', 'validate'] as const;
 
 export class ConfigTool extends BaseTool {
   readonly name = 'ansible-config';
@@ -25,11 +25,18 @@ export class ConfigTool extends BaseTool {
       return [
         ...common,
         {
-          key: 'onlyChanged',
-          label: 'Only changed',
-          type: 'checkbox',
-          defaultValue: false,
-          description: 'Show only configurations that differ from defaults',
+          key: 'configType',
+          label: 'Config type',
+          type: 'select',
+          options: ['all', 'base', 'become', 'cache', 'callback', 'cliconf', 'connection', 'httpapi', 'inventory', 'lookup', 'netconf', 'shell', 'vars'],
+          description: 'Filter config output to a specific plugin type',
+        },
+        {
+          key: 'format',
+          label: 'Output format',
+          type: 'select',
+          options: ['json', 'yaml'],
+          description: 'Output format for config list',
         },
       ];
     }
@@ -37,6 +44,20 @@ export class ConfigTool extends BaseTool {
     if (action === 'dump') {
       return [
         ...common,
+        {
+          key: 'configType',
+          label: 'Config type',
+          type: 'select',
+          options: ['all', 'base', 'become', 'cache', 'callback', 'cliconf', 'connection', 'httpapi', 'inventory', 'lookup', 'netconf', 'shell', 'vars'],
+          description: 'Filter config output to a specific plugin type',
+        },
+        {
+          key: 'format',
+          label: 'Output format',
+          type: 'select',
+          options: ['json', 'yaml', 'display'],
+          description: 'Output format for config dump',
+        },
         {
           key: 'onlyChanged',
           label: 'Only changed',
@@ -47,7 +68,7 @@ export class ConfigTool extends BaseTool {
       ];
     }
 
-    if (action === 'view') {
+    if (action === 'view' || action === 'validate') {
       return common;
     }
 
@@ -87,7 +108,13 @@ export class ConfigTool extends BaseTool {
     if (params['configFile']) {
       cmd.push('-c', params['configFile'] as string);
     }
-    if (params['onlyChanged']) {
+    if (params['configType']) {
+      cmd.push('-t', params['configType'] as string);
+    }
+    if (params['format']) {
+      cmd.push('-f', params['format'] as string);
+    }
+    if (params.action === 'dump' && params['onlyChanged']) {
       cmd.push('--only-changed');
     }
     if (params['outputFile']) {
