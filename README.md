@@ -349,6 +349,7 @@ npm run dev
 npm run build          # Bundle src/ to dist/
 npm start              # Run built app
 ```
+![terminal-install-rec](install-rec.gif)
 
 Useful commands:
 
@@ -373,10 +374,11 @@ npx vitest run tests/components/Sidebar.test.tsx
 npx vitest run tests/screens/JobsScreen.test.tsx
 npx vitest run tests/screens/SessionsScreen.test.tsx
 ```
+![terminal-test-rec](test-rec.gif)
 
 Current suite expectation:
 
-- `230/230` tests passing
+- `297/297` tests passing
 
 ## CI
 
@@ -401,4 +403,4 @@ src/
 
 ## License
 
-MIT
+[MIT](LICENSE)
