@@ -24,7 +24,7 @@ An Ansible workstation-style terminal UI.
 
 Interactive screens currently exist for `ansible-playbook`, `ansible-galaxy`, `ansible-vault`, `ansible-inventory`, `ansible-doc`, `ansible-config`, `ansible-lint`, `ansible-builder`, `ansible-creator`, `ansible-test`, and `ansible-console`. Runtime detection also reports broader tool availability, including `ansible-pull` and `ansible-community`, but those tools are not yet first-class interactive screens.
 
-![terminal-rec](rec.gif)
+![terminal-rec](last-rec.gif)
 
 
 ## Highlights
