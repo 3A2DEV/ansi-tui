@@ -3,10 +3,9 @@
 ![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript)
 ![Static Badge](https://img.shields.io/badge/MIT-blue?logo=License&label=License)
 
-<div style="text-align:center">
-  <img src="banner.png" />
-</div>
-
+<p align="center">
+  <img src="banner.png">
+</p>
 
 `ansi-tui` wraps common day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
 
