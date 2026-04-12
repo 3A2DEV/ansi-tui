@@ -38,3 +38,4 @@ coverage/
 !CHANGELOG.md
 !CONTRIBUTING.md
 !pull_request_template.md
+!docs/**/*.md
