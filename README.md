@@ -1,7 +1,7 @@
 ![Static Badge](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
 ![Static Badge](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js)
 ![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript)
-![Static Badge](https://img.shields.io/badge/MIT-blue?logo=License&label=License)
+![Static Badge](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
 
 <p align="center">
   <img src="banner.png">
