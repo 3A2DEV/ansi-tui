@@ -13,7 +13,6 @@ Interactive screens currently exist for `ansible-playbook`, `ansible-galaxy`, `a
 
 ![terminal-rec](recs/last-rec.gif)
 
-
 ## Highlights
 
 - Full-terminal shell with a static gradient banner, grouped sidebar, dashboard panels, and compact footer command strip
