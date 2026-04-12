@@ -374,18 +374,29 @@ Pull requests run the npm test workflow defined in `.github/workflows/npm-tests.
 - suite-specific test runs for `core`, `tools`, `components`, `screens`, and `hooks`
 - Node.js matrix coverage for `20`, `22`, and `24`
 
-## Architecture Snapshot
 
-```text
-src/
-├── models/       # shared types only
-├── core/         # pure logic: detector, executor, jobs, proxy, session
-├── tools/        # BaseTool subclasses, zero UI imports
-├── hooks/        # React hooks wrapping core modules
-├── components/   # reusable Ink UI building blocks
-├── screens/      # workflow screens and management views
-├── App.tsx       # shell layout, routing, global hotkeys
-└── index.tsx     # entry point
+## Git Contribution Flow
+
+```mermaid
+gitGraph
+
+    commit id: "devel" type: HIGHLIGHT
+
+    checkout main
+    commit id: "fork"
+
+    branch "fork:main"
+    checkout "fork:main"
+    commit id: "forked from main"
+    commit id: "new feature" tag: "backport-10"
+
+    checkout main
+    merge "fork:main" id: "PR merged"
+
+    branch stable-10
+    checkout stable-10
+    merge "fork:main" id: "Backporting PR" type: HIGHLIGHT tag: "stable"
+    
 ```
 
 ## License
