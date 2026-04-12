@@ -4,7 +4,7 @@
 ![Static Badge](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
 
 <p align="center">
-  <img src="banner.png">
+  <img src="img/banner.png">
 </p>
 
 `ansi-tui` wraps common day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
@@ -375,7 +375,7 @@ Pull requests run the npm test workflow defined in `.github/workflows/npm-tests.
 
 ## Git Contribution Flow
 
-![git-flow](gitflow.svg)
+![git-flow](img/gitflow.svg)
 
 Maintainers then run the `Release stable-10` workflow manually and select the branch to release, typically `stable-10`, to publish npm and create the GitHub release.
 
