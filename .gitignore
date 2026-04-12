@@ -33,8 +33,9 @@ coverage/
 ~/.local/share/ansi-tui/
 
 # md
+*.md
 !README.md
 !CHANGELOG.md
 !CONTRIBUTING.md
 !pull_request_template.md
-*.md
+!changelogs/fragments/*.md
