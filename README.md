@@ -375,26 +375,7 @@ Pull requests run the npm test workflow defined in `.github/workflows/npm-tests.
 
 ## Git Contribution Flow
 
-```mermaid
-gitGraph
-
-    commit id: "devel" type: HIGHLIGHT
-
-    checkout main
-    commit id: "fork"
-
-    branch "fork:main"
-    checkout "fork:main"
-    commit id: "forked from main"
-    commit id: "release prep" tag: "backport-10"
-
-    checkout main
-    merge "fork:main" id: "PR merged"
-
-    branch stable-10
-    checkout stable-10
-    merge "fork:main" id: "Backporting PR" type: HIGHLIGHT tag: "stable"
-```
+![git-flow](gitflow.svg)
 
 Maintainers then run the `Release stable-10` workflow manually and select the branch to release, typically `stable-10`, to publish npm and create the GitHub release.
 
