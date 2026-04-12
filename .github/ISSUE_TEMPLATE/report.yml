@@ -1,0 +1,206 @@
+name: Problem Report
+description: Report a bug, regression, broken workflow, or confusing behavior in ansi-tui.
+title: "[Report]: "
+labels:
+  - needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem in `ansi-tui`.
+
+        This project is a terminal UI for Ansibler. Good reports include the exact screen/tool, action, environment, and reproduction steps.
+
+        Before submitting:
+        - Re-run with the latest build if possible.
+        - Include the command preview shown by the app when relevant.
+        - Attach log/output snippets.
+        - If the issue is Ansible-tool specific, include `ansible --version` output.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Problem Summary
+      description: One short paragraph describing the problem and why it matters.
+      placeholder: When I open the Inventory screen and run the graph action, the app freezes after command preview and never renders LiveOutput.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Report Category
+      description: Choose the closest match.
+      options:
+        - Bug
+        - UI or layout issue
+        - Keyboard or navigation issue
+        - Command building issue
+        - Execution or subprocess issue
+        - Session or jobs issue
+        - Documentation issue
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: affected-area
+    attributes:
+      label: Affected Area
+      description: Which part of the app is involved?
+      options:
+        - Home
+        - Sessions
+        - Jobs
+        - Playbook
+        - Galaxy
+        - Vault
+        - Inventory
+        - Docs
+        - Config
+        - Lint
+        - Builder
+        - Creator
+        - Test
+        - Console
+        - LiveOutput
+        - Theme
+        - Others
+    validations:
+      required: true
+
+  - type: input
+    id: tool-action
+    attributes:
+      label: Tool and Action
+      description: Name the tool and action if applicable.
+      placeholder: ansible-playbooks / Run
+
+  - type: dropdown
+    id: workflow-phase
+    attributes:
+      label: Workflow Phase
+      description: Where does the problem happen?
+      options:
+        - Action select
+        - Parameter form
+        - Command preview
+        - Execute or LiveOutput
+        - Jobs history
+        - Sessions management
+        - App startup
+        - Theme switching
+        - Unknown
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Provide a minimal, numbered sequence that reproduces the problem.
+      placeholder: |
+        1. Start the app with `npm start`
+        2. Open the Inventory screen
+        3. Choose the `graph` action
+        4. Enter `hosts.ini`
+        5. Press Enter on command preview
+        6. Observe the failure
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      placeholder: The command should execute and render the inventory graph in LiveOutput.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      placeholder: The screen stops updating, no output appears, and I have to quit the app.
+    validations:
+      required: true
+
+  - type: textarea
+    id: command-preview
+    attributes:
+      label: Command Preview or Error Output
+      description: Paste the command preview, terminal output, stack trace, or error message. Redact secrets.
+      render: shell
+      placeholder: |
+        ansible-inventory --graph -i hosts.ini
+
+        Error: ...
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs or Job Details
+      description: If available, paste the saved output log path or relevant excerpts from the job output. Redact secrets before submitting.
+      render: shell
+      placeholder: |
+        Job ID: ...
+        Exit code: ...
+        Log excerpt: ...
+
+  - type: textarea
+    id: session-context
+    attributes:
+      label: Session and Workspace Context
+      description: Describe only the context needed to reproduce the problem. Do not include secrets.
+      placeholder: |
+        Working directory: /path/to/project
+        Inventory configured: yes
+        Vault password file configured: no
+        Tags configured: web,prod
+        Reproduces in a fresh session: yes
+
+  - type: textarea
+    id: ansible-env
+    attributes:
+      label: Ansible Environment
+      description: Paste `ansible --version` and note any relevant tool availability issues.
+      render: shell
+      placeholder: |
+        $ ansible --version
+        ansible [core 2.x.x]
+        ...
+
+  - type: textarea
+    id: runtime-env
+    attributes:
+      label: Runtime Environment
+      description: Include OS, terminal, Node.js version, installation method, and how you launched ansi-tui.
+      placeholder: |
+        OS: macOS 15.4 / Ubuntu 24.04
+        Terminal: iTerm2 3.x / Ghostty / Windows Terminal
+        Node.js: 22.x
+        ansi-tui version: 0.1.0
+        Install method: npm install / npm pack / local source checkout
+        Launch command: npm start
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Report Checklist
+      description: Confirm the basics before submitting.
+      options:
+        - label: I searched existing issues for the same or a similar problem.
+          required: true
+        - label: I included clear reproduction steps.
+          required: true
+        - label: I included command preview, logs, or terminal output when relevant.
+          required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Screenshots, terminal size constraints, related regressions, or anything else that may help.
+      placeholder: The issue started after switching theme or after updating ansible-core.
