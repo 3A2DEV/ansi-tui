@@ -3,28 +3,16 @@
 ![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript)
 ![Static Badge](https://img.shields.io/badge/MIT-blue?logo=License&label=License)
 
-# ansi-tui 
+<div style="text-align:center">
+  <img src="banner.png" />
+</div>
 
-An Ansible workstation-style terminal UI.
-
-```
-╭───────────────────────────────────────────────────────╮
-│  █████╗ ███╗   ██╗███████╗██╗   ████████╗██╗   ██╗██╗ │
-│ ██╔══██╗████╗  ██║██╔════╝██║   ╚══██╔══╝██║   ██║██║ │
-│ ███████║██╔██╗ ██║███████╗██║█████╗██║   ██║   ██║██║ │
-│ ██╔══██║██║╚██╗██║╚════██║██║╚════╝██║   ██║   ██║██║ │
-│ ██║  ██║██║ ╚████║███████║██║      ██║   ╚██████╔╝██║ │
-│ ╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝      ╚═╝    ╚═════╝ ╚═╝ │
-│                                                       │
-│           ◈ Ansible Terminal User Interface           │
-╰───────────────────────────────────────────────────────╯
-```
 
 `ansi-tui` wraps common day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
 
 Interactive screens currently exist for `ansible-playbook`, `ansible-galaxy`, `ansible-vault`, `ansible-inventory`, `ansible-doc`, `ansible-config`, `ansible-lint`, `ansible-builder`, `ansible-creator`, `ansible-test`, and `ansible-console`. Runtime detection also reports broader tool availability, including `ansible-pull` and `ansible-community`, but those tools are not yet first-class interactive screens.
 
-![terminal-rec](last-rec.gif)
+![terminal-rec](recs/last-rec.gif)
 
 
 ## Highlights
@@ -349,7 +337,7 @@ npm run dev
 npm run build          # Bundle src/ to dist/
 npm start              # Run built app
 ```
-![terminal-install-rec](install-rec.gif)
+![terminal-install-rec](recs/install-rec.gif)
 
 Useful commands:
 
@@ -374,7 +362,7 @@ npx vitest run tests/components/Sidebar.test.tsx
 npx vitest run tests/screens/JobsScreen.test.tsx
 npx vitest run tests/screens/SessionsScreen.test.tsx
 ```
-![terminal-test-rec](test-rec.gif)
+![terminal-test-rec](recs/test-rec.gif)
 
 Current suite expectation:
 
