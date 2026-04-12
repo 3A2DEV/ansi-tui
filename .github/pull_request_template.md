@@ -17,6 +17,12 @@
 ##### COMPONENT NAME
 <!--- Write the NAME/PATH/STRUCTURE of the tool component below. -->
 
+##### CHANGELOG FRAGMENT
+<!--- Add a changelog fragment file to changelogs/fragments/{PR_number}.{type}.md -->
+<!--- Valid types: added, changed, deprecated, removed, fixed, security -->
+<!--- Example filename: 42.fixed.md — Example content: Fixed sidebar crash on startup. -->
+- [ ] Added `changelogs/fragments/{PR_number}.{type}.md`
+
 ##### ADDITIONAL INFORMATION
 <!--- Include additional information to help people understand the change here -->
 <!--- A step-by-step reproduction of the problem is helpful if there is no related issue -->
