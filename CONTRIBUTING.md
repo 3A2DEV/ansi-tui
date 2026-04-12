@@ -83,16 +83,30 @@ npm run pack:check
 
 ## Release Notes
 
-Current release path is manual.
+Release preparation still starts on `main`, but publication now happens from a manual release workflow run after the backport branch is ready.
 
-Before publishing:
+Before opening the release PR:
 
 ```bash
 npm run verify
 npm run pack:check
+npm run changelog
 ```
 
-Then publish with npm using the package metadata in `package.json`.
+Then:
+
+- update `package.json` to the release version
+- open the release PR against `main`
+- add the `backport-10` label so it is auto-backported to `stable-10`
+- merge the generated backport PR into `stable-10`
+- manually run `.github/workflows/release.yml` and select the branch to release, typically `stable-10`
+
+When the workflow is dispatched, it will publish from the selected branch and:
+
+- run `npm run verify`
+- run `npm run pack:check`
+- publish the package to npm using `NPM_TOKEN`
+- create a GitHub release for `v<package.json version>` using `CHANGELOG.md` as the release notes
 
 ## Project Structure
 
@@ -354,7 +368,7 @@ If you are contributing from a fork, you won't know your PR number until after y
 
 ### When to skip
 
-Fragments can be omitted for changes with no user-facing effect — for example, CI configuration updates, internal tooling changes, or pure test additions. This is at maintainer discretion.
+Fragments can be omitted for changes with no user-facing effect — for example, CI configuration updates, release automation changes, internal tooling changes, or pure test additions. This is at maintainer discretion.
 
 ### Release assembly
 

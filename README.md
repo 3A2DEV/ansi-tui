@@ -386,7 +386,7 @@ gitGraph
     branch "fork:main"
     checkout "fork:main"
     commit id: "forked from main"
-    commit id: "new feature" tag: "backport-10"
+    commit id: "release prep" tag: "backport-10"
 
     checkout main
     merge "fork:main" id: "PR merged"
@@ -395,6 +395,8 @@ gitGraph
     checkout stable-10
     merge "fork:main" id: "Backporting PR" type: HIGHLIGHT tag: "stable"
 ```
+
+Maintainers then run the `Release stable-10` workflow manually and select the branch to release, typically `stable-10`, to publish npm and create the GitHub release.
 
 ## License
 
