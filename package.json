@@ -42,7 +42,9 @@
     "lint": "eslint src --ext .ts,.tsx",
     "pack:check": "npm pack --dry-run",
     "verify": "npm run typecheck && npm run lint && npm test && npm run build",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "changelog:draft": "towncrier build --draft --version $(node -p \"require('./package.json').version\")",
+    "changelog": "towncrier build --version $(node -p \"require('./package.json').version\") --date $(date +%Y-%m-%d)"
   },
   "dependencies": {
     "chalk": "^5.0.0",

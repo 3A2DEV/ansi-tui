@@ -55,6 +55,11 @@ ci:
     - .github/patchback.yml
     - .github/dependabot.yml
 
+changelogs:
+- changed-files:
+  - any-glob-to-any-file:
+    - changelogs/**
+
 template:
 - changed-files:
   - any-glob-to-any-file:

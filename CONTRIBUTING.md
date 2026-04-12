@@ -313,6 +313,63 @@ Common files to keep aligned:
 - `CHANGELOG.md` for release notes
 - `AGENTS.md` and `CLAUDE.md` for contributor/agent guidance when architectural rules or UI conventions change
 
+## Changelog Fragments
+
+Every pull request that changes behavior, fixes a bug, adds a feature, or removes something should include a changelog fragment.
+
+Fragments live in `changelogs/fragments/` and are assembled into `CHANGELOG.md` at release time using [towncrier](https://towncrier.readthedocs.io/).
+
+### Fragment naming
+
+Fragment files follow this convention:
+
+```
+changelogs/fragments/{PR_number}.{type}.md
+```
+
+**Valid types:**
+
+| Type | Use for |
+|---|---|
+| `added` | New features or capabilities |
+| `changed` | Behavior changes to existing features |
+| `deprecated` | Features that will be removed in a future release |
+| `removed` | Features or options that have been removed |
+| `fixed` | Bug fixes |
+| `security` | Security-related fixes |
+
+### Fragment content
+
+One sentence. User-facing. Present or past tense is fine.
+
+Good examples:
+
+- `Fixed sidebar crash when no session is active on startup.`
+- `Added Ctrl+F path browser support to all text fields with isPath enabled.`
+- `Removed the deprecated LogViewerScreen navigation entry.`
+
+### Fork workflow
+
+If you are contributing from a fork, you won't know your PR number until after you push. Use `0.{type}.md` as a placeholder and rename it after the PR is opened, or leave it for a maintainer to rename before merge.
+
+### When to skip
+
+Fragments can be omitted for changes with no user-facing effect — for example, CI configuration updates, internal tooling changes, or pure test additions. This is at maintainer discretion.
+
+### Release assembly
+
+Maintainers assemble fragments at release time:
+
+```bash
+# Preview without writing
+npm run changelog:draft
+
+# Write to CHANGELOG.md and delete fragments
+npm run changelog
+```
+
+---
+
 ## Pull Requests
 
 Keep pull requests focused and easy to review.
