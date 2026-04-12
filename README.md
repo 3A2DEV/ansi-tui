@@ -394,7 +394,6 @@ gitGraph
     branch stable-10
     checkout stable-10
     merge "fork:main" id: "Backporting PR" type: HIGHLIGHT tag: "stable"
-    
 ```
 
 ## License
