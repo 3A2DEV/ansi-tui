@@ -184,7 +184,6 @@ On launch you get:
 - a dashboard with session, runtime, health/tool matrix, and workspace notes panels
 - a footer with the active screen context and global shortcuts
 
-
 ## How Tool Screens Work
 
 Every workflow screen follows the same pattern:
