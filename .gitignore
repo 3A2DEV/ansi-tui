@@ -37,8 +37,4 @@ coverage/
 !README.md
 !CHANGELOG.md
 !CONTRIBUTING.md
-!CLAUDE.md
-!AGENTS.md
-!QWEN.md
 !pull_request_template.md
-!docs/**/*.md
