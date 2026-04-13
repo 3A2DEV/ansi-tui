@@ -16,7 +16,7 @@
 <div align="center">
 
 ![NPM Version](https://img.shields.io/npm/v/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20version)
-![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-ui%20update)
+![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20update)
 
 </div>
 
@@ -222,7 +222,7 @@ Execution behavior:
 
 ![key-bind](img/keybind.png)
 
-> Use `CTRL + F` to brwose files and directories.
+> Use `CTRL + F` to browse files and directories.
 
 ## Sessions
 
