@@ -203,61 +203,9 @@ Execution behavior:
 
 ## Keyboard Shortcuts
 
-### Global
+![key-bind](img/keybind.png)
 
-| Key | Action |
-| --- | --- |
-| `q` | Quit |
-| `s` | Open sessions |
-| `t` | Cycle theme |
-
-### Sidebar / Navigation
-
-| Key | Action |
-| --- | --- |
-| `↑` / `↓` | Move through sidebar entries or sub-actions |
-| `→` / `Enter` | Expand a tool or launch the selected action |
-| `Esc` | Collapse an open sidebar accordion |
-
-### Forms
-
-| Key | Action |
-| --- | --- |
-| `Tab` / `Shift+Tab` | Move between fields |
-| `↑` / `↓` | Move between fields |
-| `PageUp` / `PageDown` | Jump through larger forms |
-| `Enter` | Continue to the next step |
-| `Esc` | Go back |
-
-### Live Output
-
-| Key | Action |
-| --- | --- |
-| `Space` | Pause or resume auto-scroll |
-| `↑` / `↓` | Scroll output |
-| `Enter` | Jump to the bottom |
-| `Esc` | Return to the previous step or home flow, depending on launch path |
-
-### Jobs Screen
-
-| Key | Action |
-| --- | --- |
-| `↑` / `↓` | Move through recorded jobs |
-| `PageUp` / `PageDown` | Jump faster through the list or log output |
-| `Enter` | Open job detail |
-| `d` | Delete the selected job |
-| `Esc` | Back |
-
-### Sessions Screen
-
-| Key | Action |
-| --- | --- |
-| `↑` / `↓` | Move through saved sessions |
-| `Enter` | Activate selected session |
-| `n` | Create a new session |
-| `e` | Edit selected session |
-| `d` | Delete selected session |
-| `Esc` | Return to main navigation |
+> Use `CTRL + F` to brwose files and directories.
 
 ## Sessions
 
