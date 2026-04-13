@@ -1,7 +1,13 @@
 ![Static Badge](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
+![Static Badge](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/3a2dev/ansi-tui/npm-tests.yml?logo=github&label=npm-tests%20CI)
+
+
 ![Static Badge](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js)
 ![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript)
-![Static Badge](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
+![NPM Version](https://img.shields.io/npm/v/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20version)
+![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fanti-tui?logo=npm&label=%403a2dev%2Fanti-tui%20update)
+
 
 <p align="center">
   <img src="img/banner.png">
@@ -320,10 +326,6 @@ Pull requests run the npm test workflow defined in `.github/workflows/npm-tests.
 - suite-specific test runs for `core`, `tools`, `components`, `screens`, and `hooks`
 - Node.js matrix coverage for `20`, `22`, and `24`
 
-
-## Git Contribution Flow
-
-![git-flow](img/gitflow.svg)
 
 Maintainers then run the `Release stable-10` workflow manually and select the branch to release, typically `stable-10`, to publish npm and create the GitHub release.
 
