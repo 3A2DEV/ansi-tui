@@ -1,13 +1,24 @@
+<div align="center">
+
 ![Static Badge](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
 ![Static Badge](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/3a2dev/ansi-tui/npm-tests.yml?logo=github&label=npm-tests%20CI)
 
+</div>
 
-![Static Badge](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js)
-![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript)
+<div align="center">
+
+![Static Badge](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js&logoColor=white)
+![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript&logoColor=white)
+
+</div>
+
+<div align="center">
+
 ![NPM Version](https://img.shields.io/npm/v/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20version)
-![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fanti-tui?logo=npm&label=%403a2dev%2Fanti-tui%20update)
+![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-ui%20update)
 
+</div>
 
 <p align="center">
   <img src="img/banner.png">
