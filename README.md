@@ -205,7 +205,7 @@ Execution behavior:
 
 ![key-bind](img/keybind.png)
 
-> Note: Use `CTRL + F` to brwose files and directories.
+> Use `CTRL + F` to brwose files and directories.
 
 ## Sessions
 
