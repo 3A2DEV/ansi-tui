@@ -1,19 +1,16 @@
 <div align="center">
 
-![Static Badge](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
-![Static Badge](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
+![Ansible TUI](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
+![License](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/3a2dev/ansi-tui/npm-tests.yml?logo=github&label=npm-tests%20CI)
 
-</div>
+![Dependabot](https://img.shields.io/badge/secure-green?logo=dependabot&label=dependabot)
+![Github Code Quality](https://img.shields.io/badge/Code%20Quality-blue?logo=github&label=GitHub)
 
-<div align="center">
 
-![Static Badge](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js&logoColor=white)
-![Static Badge](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript&logoColor=white)
+![Node version](https://img.shields.io/badge/18%2B-green?logo=node.js&label=Node.js&logoColor=white)
+![Typescript version](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript&logoColor=white)
 
-</div>
-
-<div align="center">
 
 ![NPM Version](https://img.shields.io/npm/v/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20version)
 ![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20update)
