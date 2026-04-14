@@ -36,7 +36,7 @@ describe('session', () => {
     const session = createSession('test-session', '/tmp/test');
 
     expect(session.id).toBeTruthy();
-    expect(session.id).toHaveLength(36); // UUID v4 format
+    expect(session.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i); // UUID v4 format
     expect(session.name).toBe('test-session');
     expect(session.workingDir).toBe('/tmp/test');
     expect(typeof session.createdAt).toBe('string');
