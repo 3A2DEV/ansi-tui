@@ -39,8 +39,11 @@ describe('session', () => {
     expect(session.id).toHaveLength(36); // UUID v4 format
     expect(session.name).toBe('test-session');
     expect(session.workingDir).toBe('/tmp/test');
-    expect(session.createdAt).toBeTruthy();
-    expect(session.lastUsed).toBeTruthy();
+    expect(typeof session.createdAt).toBe('string');
+    expect(typeof session.lastUsed).toBe('string');
+    expect(Number.isNaN(Date.parse(session.createdAt))).toBe(false);
+    expect(Number.isNaN(Date.parse(session.lastUsed))).toBe(false);
+    expect(session.createdAt).toBe(session.lastUsed);
     expect(session.inventory).toBeNull();
     expect(session.vaultPasswordFile).toBeNull();
     expect(session.vaultId).toBeNull();
