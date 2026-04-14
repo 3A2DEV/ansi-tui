@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, afterAll } from 'vitest';
 import {
   createSession,
   saveSession,

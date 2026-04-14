@@ -1,7 +1,6 @@
 import { describe, it, expect, afterEach, vi } from 'vitest';
 import { mkdir, rm, writeFile, readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { tmpdir } from 'node:os';
 
 // vi.hoisted runs before vi.mock — use it to define the temp dir path
 // so the factory below can safely reference it.
