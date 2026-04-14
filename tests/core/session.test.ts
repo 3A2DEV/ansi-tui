@@ -110,6 +110,13 @@ describe('session', () => {
     expect(active).toBeNull();
   });
 
+  it('setActiveSession with non-existent session ID results in no active session', async () => {
+    await setActiveSession('00000000-0000-4000-8000-000000000000');
+
+    const active = await getActiveSession();
+    expect(active).toBeNull();
+  });
+
   it('getActiveSession returns null when no active session', async () => {
     const active = await getActiveSession();
     expect(active).toBeNull();
