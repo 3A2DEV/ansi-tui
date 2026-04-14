@@ -1,5 +1,19 @@
-import { describe, it, expect, afterAll } from 'vitest';
-import {
+import { rm } from 'node:fs/promises';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+const { testDataDir } = vi.hoisted(() => {
+  const path = require('node:path') as typeof import('node:path');
+  const os = require('node:os') as typeof import('node:os');
+  return {
+    testDataDir: path.join(os.tmpdir(), `ansi-tui-session-test-${process.pid}`),
+  };
+});
+
+vi.mock('env-paths', () => ({
+  default: () => ({ data: testDataDir }),
+}));
+
+const {
   createSession,
   saveSession,
   loadSession,
@@ -7,15 +21,15 @@ import {
   deleteSession,
   setActiveSession,
   getActiveSession,
-} from '../../src/core/session.js';
+} = await import('../../src/core/session.js');
 
 describe('session', () => {
-  const testSessionIds: string[] = [];
+  beforeEach(async () => {
+    await rm(testDataDir, { recursive: true, force: true });
+  });
 
-  afterAll(async () => {
-    for (const id of testSessionIds) {
-      await deleteSession(id);
-    }
+  afterEach(async () => {
+    await rm(testDataDir, { recursive: true, force: true });
   });
 
   it('createSession generates a valid session object', () => {
@@ -39,7 +53,6 @@ describe('session', () => {
 
   it('saveSession and loadSession roundtrip', async () => {
     const session = createSession('roundtrip-test', '/tmp');
-    testSessionIds.push(session.id);
 
     session.inventory = 'hosts.yml';
     session.extraVars = { key: 'value' };
@@ -55,7 +68,6 @@ describe('session', () => {
 
   it('listSessions returns saved sessions', async () => {
     const session = createSession('list-test', '/tmp');
-    testSessionIds.push(session.id);
     await saveSession(session);
 
     const sessions = await listSessions();
@@ -77,7 +89,6 @@ describe('session', () => {
 
   it('setActiveSession and getActiveSession roundtrip', async () => {
     const session = createSession('active-test', '/tmp');
-    testSessionIds.push(session.id);
     await saveSession(session);
 
     await setActiveSession(session.id);
@@ -100,9 +111,7 @@ describe('session', () => {
   });
 
   it('getActiveSession returns null when no active session', async () => {
-    // Delete the active session pointer
     const active = await getActiveSession();
-    // It either returns null or a valid session
-    expect(active === null || typeof active.id === 'string').toBe(true);
+    expect(active).toBeNull();
   });
 });
