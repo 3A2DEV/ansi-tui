@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { Box, Text, useInput } from 'ink';
 import stripAnsi from 'strip-ansi';
 import { PanelFrame } from './PanelFrame.js';
@@ -23,6 +23,8 @@ interface AnsiSegment {
 }
 
 const ANSI_PATTERN = new RegExp(`${ESC}\\[([0-9;]*)m`, 'g');
+const ANSI_SEGMENT_CACHE_LIMIT = 1000;
+const ANSI_SEGMENT_CACHE = new Map<string, AnsiSegment[]>();
 
 const ANSI_COLORS: Record<number, string> = {
   30: 'black',
@@ -151,7 +153,7 @@ const applyAnsiCodes = (style: AnsiStyle, codes: string): AnsiStyle => {
   return next;
 };
 
-const renderAnsiLine = (line: string): React.ReactNode => {
+const parseAnsiLine = (line: string): AnsiSegment[] => {
   const segments: AnsiSegment[] = [];
   let style = resetAnsiStyle();
   let lastIndex = 0;
@@ -168,6 +170,31 @@ const renderAnsiLine = (line: string): React.ReactNode => {
   if (lastIndex < line.length) {
     segments.push({ text: line.slice(lastIndex), style: { ...style } });
   }
+
+  return segments;
+};
+
+const getAnsiSegments = (line: string): AnsiSegment[] => {
+  const cached = ANSI_SEGMENT_CACHE.get(line);
+  if (cached) {
+    return cached;
+  }
+
+  const parsed = parseAnsiLine(line);
+  ANSI_SEGMENT_CACHE.set(line, parsed);
+
+  if (ANSI_SEGMENT_CACHE.size > ANSI_SEGMENT_CACHE_LIMIT) {
+    const oldestKey = ANSI_SEGMENT_CACHE.keys().next().value;
+    if (typeof oldestKey === 'string') {
+      ANSI_SEGMENT_CACHE.delete(oldestKey);
+    }
+  }
+
+  return parsed;
+};
+
+const renderAnsiLine = (line: string): React.ReactNode => {
+  const segments = getAnsiSegments(line);
 
   if (segments.length === 0) {
     return ' ';
@@ -193,6 +220,43 @@ const formatElapsed = (secs: number): string => {
   const s = (secs % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 };
+
+interface RunningStatusProps {
+  readonly isRunning: boolean;
+  readonly lineCount: number;
+}
+
+const RunningStatus: React.FC<RunningStatusProps> = React.memo(({ isRunning, lineCount }) => {
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (!isRunning) {
+      setElapsed(0);
+      return;
+    }
+
+    setElapsed(0);
+    const t = setInterval(() => setElapsed((prev) => prev + 1), 1000);
+    return () => clearInterval(t);
+  }, [isRunning]);
+
+  if (!isRunning) {
+    return null;
+  }
+
+  return (
+    <Box gap={1}>
+      <BrailleSpinner color="cyan" />
+      <Text dimColor>running</Text>
+      <Text dimColor>·</Text>
+      <Text dimColor>{formatElapsed(elapsed)}</Text>
+      <Text dimColor>·</Text>
+      <Text dimColor>{lineCount} lines</Text>
+      <Text dimColor>·</Text>
+      <Text dimColor>space to pause</Text>
+    </Box>
+  );
+});
 
 interface LiveOutputProps {
   lines: string[];
@@ -222,14 +286,6 @@ export const LiveOutput: React.FC<LiveOutputProps> = ({
   const terminalRows = process.stdout.rows ?? 40;
   const [paused, setPaused] = React.useState(false);
   const [scrollOffset, setScrollOffset] = React.useState(0);
-
-  // ── 7.4: Elapsed time counter ────────────────────────────────────────────
-  const [elapsed, setElapsed] = useState(0);
-  useEffect(() => {
-    if (!isRunning) { setElapsed(0); return; }
-    const t = setInterval(() => setElapsed(s => s + 1), 1000);
-    return () => clearInterval(t);
-  }, [isRunning]);
   const userScrolled = useRef(false);
   const effectiveMaxHeight = Math.max(maxHeight, terminalRows - 20);
 
@@ -285,7 +341,21 @@ export const LiveOutput: React.FC<LiveOutputProps> = ({
   }, [lines.length, paused, effectiveMaxHeight, autoScroll]);
 
   const showScrollIndicator = paused || userScrolled.current || !autoScroll;
-  const visibleLines = lines.slice(scrollOffset, scrollOffset + effectiveMaxHeight);
+  const visibleLines = useMemo(
+    () => lines.slice(scrollOffset, scrollOffset + effectiveMaxHeight),
+    [lines, scrollOffset, effectiveMaxHeight],
+  );
+  const renderedVisibleLines = useMemo(
+    () => visibleLines.map((line, index) => {
+      if (plainText) {
+        const cleaned = stripAnsi(line);
+        return { key: scrollOffset + index, content: cleaned.length > 0 ? cleaned : ' ' };
+      }
+
+      return { key: scrollOffset + index, content: renderAnsiLine(line) };
+    }),
+    [visibleLines, plainText, scrollOffset],
+  );
   const hasMoreAbove = showScrollIndicator && scrollOffset > 0;
   const hasMoreBelow = showScrollIndicator && scrollOffset + effectiveMaxHeight < lines.length;
 
@@ -295,16 +365,7 @@ export const LiveOutput: React.FC<LiveOutputProps> = ({
         {/* ── 7.4: Running status bar ─────────────────────────── */}
         <Box justifyContent="space-between">
           {isRunning ? (
-            <Box gap={1}>
-              <BrailleSpinner color="cyan" />
-              <Text dimColor>running</Text>
-              <Text dimColor>·</Text>
-              <Text dimColor>{formatElapsed(elapsed)}</Text>
-              <Text dimColor>·</Text>
-              <Text dimColor>{lines.length} lines</Text>
-              <Text dimColor>·</Text>
-              <Text dimColor>space to pause</Text>
-            </Box>
+            <RunningStatus isRunning={isRunning} lineCount={lines.length} />
           ) : (
             <Text dimColor>
               {paused ? '[PAUSED] ' : ''}
@@ -317,17 +378,14 @@ export const LiveOutput: React.FC<LiveOutputProps> = ({
 
         <Box flexDirection="column" height={effectiveMaxHeight} overflow="hidden">
           {isRunning && lines.length === 0 && (
-            <Box gap={1}>
-              <BrailleSpinner color="cyan" />
-              <Text dimColor>waiting for output...</Text>
-            </Box>
+            <Text dimColor>waiting for output...</Text>
           )}
           {hasMoreAbove && (
             <Text dimColor>{`  ${ARROW_UP} ${scrollOffset} more lines above`}</Text>
           )}
-          {visibleLines.map((line, i) => (
-            <Text key={scrollOffset + i} wrap={wrapMode === 'wrap' ? undefined : 'truncate'}>
-              {plainText ? ((stripAnsi(line).length > 0 ? stripAnsi(line) : ' ')) : renderAnsiLine(line)}
+          {renderedVisibleLines.map((line) => (
+            <Text key={line.key} wrap={wrapMode === 'wrap' ? undefined : 'truncate'}>
+              {line.content}
             </Text>
           ))}
           {lines.length === 0 && !isRunning && (
