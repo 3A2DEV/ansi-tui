@@ -66,6 +66,15 @@ describe('session', () => {
     expect(loaded.extraVars).toEqual({ key: 'value' });
   });
 
+  it('loadSession handles non-existent session IDs', async () => {
+    try {
+      const loaded = await loadSession('missing-session-id');
+      expect(loaded).toBeNull();
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+    }
+  });
+
   it('listSessions returns saved sessions', async () => {
     const session = createSession('list-test', '/tmp');
     await saveSession(session);
