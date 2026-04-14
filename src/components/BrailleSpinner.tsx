@@ -8,7 +8,7 @@ interface BrailleSpinnerProps {
   color?: string;
 }
 
-export const BrailleSpinner: React.FC<BrailleSpinnerProps> = ({ color }) => {
+export const BrailleSpinner: React.FC<BrailleSpinnerProps> = React.memo(({ color }) => {
   const frame = useAnimation(BRAILLE_FRAMES, 80);
   return <Text color={color}>{frame}</Text>;
-};
+});
