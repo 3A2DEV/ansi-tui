@@ -36,11 +36,14 @@ describe('session', () => {
     const session = createSession('test-session', '/tmp/test');
 
     expect(session.id).toBeTruthy();
-    expect(session.id).toHaveLength(36); // UUID v4 format
+    expect(session.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i); // UUID v4 format
     expect(session.name).toBe('test-session');
     expect(session.workingDir).toBe('/tmp/test');
-    expect(session.createdAt).toBeTruthy();
-    expect(session.lastUsed).toBeTruthy();
+    expect(typeof session.createdAt).toBe('string');
+    expect(typeof session.lastUsed).toBe('string');
+    expect(Number.isNaN(Date.parse(session.createdAt))).toBe(false);
+    expect(Number.isNaN(Date.parse(session.lastUsed))).toBe(false);
+    expect(session.createdAt).toBe(session.lastUsed);
     expect(session.inventory).toBeNull();
     expect(session.vaultPasswordFile).toBeNull();
     expect(session.vaultId).toBeNull();
@@ -64,6 +67,15 @@ describe('session', () => {
     expect(loaded.name).toBe('roundtrip-test');
     expect(loaded.inventory).toBe('hosts.yml');
     expect(loaded.extraVars).toEqual({ key: 'value' });
+  });
+
+  it('loadSession handles non-existent session IDs', async () => {
+    try {
+      const loaded = await loadSession('missing-session-id');
+      expect(loaded).toBeNull();
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+    }
   });
 
   it('listSessions returns saved sessions', async () => {
@@ -105,6 +117,13 @@ describe('session', () => {
 
     await setActiveSession(session.id);
     await deleteSession(session.id);
+
+    const active = await getActiveSession();
+    expect(active).toBeNull();
+  });
+
+  it('setActiveSession with non-existent session ID results in no active session', async () => {
+    await setActiveSession('00000000-0000-4000-8000-000000000000');
 
     const active = await getActiveSession();
     expect(active).toBeNull();
