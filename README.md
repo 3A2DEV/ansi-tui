@@ -12,20 +12,23 @@
 ![Typescript version](https://img.shields.io/badge/5%2B-blue?logo=Typescript&label=Typescript&logoColor=white)
 
 
-![NPM Version](https://img.shields.io/npm/v/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20version)
-![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fansi-tui?logo=npm&label=%403a2dev%2Fansi-tui%20update)
+![NPM Version](https://img.shields.io/npm/v/%403a2dev%2Fansi-tui?logo=npm&label=ansi-tui%20version)
+![NPM Last Update](https://img.shields.io/npm/last-update/%403a2dev%2Fansi-tui?logo=npm&label=ansi-tui%20update)
+
+![NPM Downloads](https://img.shields.io/npm/dw/%403a2dev%2Fansi-tui?logo=npm&logoColor=white&label=ansi-tui%20downloads&color=blue)
+![NPM Downloads](https://img.shields.io/npm/dm/%403a2dev%2Fansi-tui?label=&color=blue)
+![NPM Downloads](https://img.shields.io/npm/dy/%403a2dev%2Fansi-tui?label=&color=blue)
+
+[**Official website**](https://ansibleterminalui.vercel.app/) ― 
+[**View on npmjs**](https://www.npmjs.com/package/@3a2dev/ansi-tui)
 
 </div>
 
-<p align="center">
-  <img src="img/banner.png">
-</p>
+![terminal-rec](recs/last-rec.gif)
 
 `ansi-tui` wraps common day-to-day Ansible workflows in a guided Ink-based terminal interface. It keeps the exact command line visible, remembers working context per session, streams execution output live, and records active-session runs as structured jobs with logs.
 
 Interactive screens currently exist for `ansible-playbook`, `ansible-galaxy`, `ansible-vault`, `ansible-inventory`, `ansible-doc`, `ansible-config`, `ansible-lint`, `ansible-builder`, `ansible-creator`, `ansible-test`, and `ansible-console`. Runtime detection also reports broader tool availability, including `ansible-pull` and `ansible-community`, but those tools are not yet first-class interactive screens.
-
-![terminal-rec](recs/last-rec.gif)
 
 ## Highlights
 
