@@ -220,9 +220,7 @@ Execution behavior:
 
 ## Keyboard Shortcuts
 
-![key-bind](img/keybind.png)
-
-> Use `CTRL + F` to browse files and directories.
+![key-bind](img/visual-key.png)
 
 ## Sessions
 
