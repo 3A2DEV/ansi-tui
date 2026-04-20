@@ -1,5 +1,7 @@
 <div align="center">
 
+![ansi-tui icon](img/favicon-48x48.png)
+
 ![Ansible TUI](https://img.shields.io/badge/Terminal%20User%20Interface-red?logo=ansible&label=Ansible)
 ![License](https://img.shields.io/badge/MIT-blue?logo=Github&label=License)
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/3a2dev/ansi-tui/npm-tests.yml?logo=github&label=npm-tests%20CI)
