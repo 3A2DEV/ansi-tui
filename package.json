@@ -57,7 +57,7 @@
     "ink-text-input": "^6.0.0",
     "react": "^18.0.0",
     "strip-ansi": "^7.0.0",
-    "uuid": "^10.0.0",
+    "uuid": "^14.0.0",
     "which": "^4.0.0"
   },
   "devDependencies": {
